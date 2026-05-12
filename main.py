@@ -12,7 +12,9 @@ from lastpart import part_last
 
 ev3 = EV3Brick()
 
-mozaic()
+#mozaic()
 sock=tool1()
+'''
 tool2(sock)
 tool3(sock)
+'''

@@ -19,22 +19,24 @@ def tool2(sock):
                         stop_sensor_port=Port.S4,
                         base_speed=650,
                         Kp=2, Kd=3, Ki=0,
-                        target=47,
+                        target=48,
                         max_angle=1000,
                         stop_mode="a",
                         stop_threshold=22,
                         side="l")
+    
+    wait(100)
 
     pid_line_follower(follow_sensor_port=Port.S1,
                         stop_sensor_port=Port.S4,
                         base_speed=450,
                         Kp=2, Kd=3, Ki=0,
-                        target=47,
+                        target=48,
                         max_angle=None,
                         stop_mode="c",
                         stop_threshold=22,
                         side="l")
-    wait(100)
+    wait(400)
 
     move_motors(500, -500, rotations=0.3)
     wait(200)
@@ -42,7 +44,8 @@ def tool2(sock):
     move_motors(-500, -500, rotations=1.53)
     wait(250)
 
-    move_motors(500, -500, rotations=0.3)
+    move_motors(500, -500, rotations=0.25)
+    wait(100)
 
     send_cmd(sock,"T, 500, 480") # turns down the motor A
     wait(500)
@@ -55,17 +58,19 @@ def tool2(sock):
                         stop_sensor_port=Port.S1,
                         base_speed=750,
                         Kp=2, Kd=3, Ki=0,
-                        target=47,
+                        target=48,
                         max_angle=950,
                         stop_mode="a",
                         stop_threshold=22,
                         side="r")
+    
+    wait(150)
 
     pid_line_follower(follow_sensor_port=Port.S4,
                         stop_sensor_port=Port.S1,
                         base_speed=300,
                         Kp=2, Kd=3, Ki=0,
-                        target=47,
+                        target=48,
                         max_angle=None,
                         stop_mode="c",
                         stop_threshold=22,

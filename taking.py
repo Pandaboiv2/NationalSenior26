@@ -35,10 +35,10 @@ def move_motors(left_speed, right_speed, duration_ms=None, rotations=None, degre
 
 # start of the program
 def mozaic():
-    move_motors(500, -500, duration_ms=850) # aligns with the wall
+    move_motors(250, -250, duration_ms=900) # aligns with the wall
     wait(500)
 
-    move_motors(-300, 302, rotations=1.19) # moves to the first row of yellow blocks
+    move_motors(-250, 250, rotations=1.16) # moves to the first row of yellow blocks
     left_motor.stop(Stop.BRAKE)
     right_motor.stop(Stop.BRAKE)
     wait(500)
@@ -76,7 +76,7 @@ def mozaic():
                         stop_sensor_port=Port.S1,
                         base_speed=300,
                         Kp=2, Kd=3, Ki=0,
-                        target=47,
+                        target=48,
                         max_angle=None,
                         stop_mode="c",
                         stop_threshold=20,
@@ -94,38 +94,3 @@ def mozaic():
 
     motor_a.run_angle(-1000, 250) # moves the white thing up a little bit
     wait(250)
-
-
-
-
-
-
-
-
-
-
-'''
-#!/usr/bin/env pybricks-micropython
-from pybricks.hubs import EV3Brick
-from pybricks.ev3devices import Motor, ColorSensor
-from pybricks.parameters import Port, Stop
-from pybricks.tools import wait, StopWatch
-from line_follower import pid_line_follower
-
-ev3 = EV3Brick()
-
-left_motor = Motor(Port.B)
-right_motor = Motor(Port.C)
-motor_a = Motor(Port.A)
-motor_d = Motor(Port.D)
-colorsensorLeft = ColorSensor(Port.S1)
-colorsensorRight = ColorSensor(Port.S4)
-
-#Reset angles
-left_motor.reset_angle(0)
-right_motor.reset_angle(0)
-motor_a.reset_angle(0)
-motor_d.reset_angle(0)
-
-wait(50)
-'''
