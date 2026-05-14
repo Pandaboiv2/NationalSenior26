@@ -31,5 +31,5 @@ def move_motors(left_speed, right_speed, duration_ms=None, rotations=None, degre
 
 # start of the program
 def outil():
-    pass
+    move_motors(-500, 500, rotations=5)
 
