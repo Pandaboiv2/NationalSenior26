@@ -6,27 +6,8 @@ from taking import move_motors
 from line_follower import pid_line_follower
 from config import ev3, left_motor, right_motor, motor_a, motor_d, colorsensorLeft, colorsensorRight
 
-def send_cmd(sock, cmd):
-    sock.send((cmd + "\n").encode())
-
-def done(sock):
-    send_cmd(sock, "done")
-    sock.close()
 
 def tool1():
-    ev3.speaker.beep()
-    sock = socket.socket()
-
-    connected = False
-    while not connected:
-        try:
-            ev3.screen.print("Linking to Slave...")
-            sock.connect(socket.getaddrinfo('192.168.0.1', 12345)[0][-1])
-            connected = True
-        except OSError:
-            ev3.screen.print("Retry in 1s...")
-            wait(1000) 
-
     pid_line_follower(follow_sensor_port=Port.S1,
                         stop_sensor_port=Port.S4,
                         base_speed=450,
