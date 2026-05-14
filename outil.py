@@ -30,6 +30,26 @@ def move_motors(left_speed, right_speed, duration_ms=None, rotations=None, degre
         return
 
 # start of the program
-def outil():
-    move_motors(-500, 500, rotations=5)
+def tool():
+    right_motor.run_angle(500, 65)
+    wait(100)
+
+    move_motors(-500, 500, rotations=0.5)
+
+    left_motor.run_angle(-500, 35)
+    wait(100)
+
+    pid_line_follower(follow_sensor_port=Port.S1,
+                    stop_sensor_port=Port.S4,
+                    base_speed=450,
+                    Kp=2, Kd=3, Ki=0,
+                    target=48,
+                    max_angle=1200,
+                    stop_mode="a",
+                    stop_threshold=22,
+                    side="r",)
+
+    wait(100)
+
+
 
