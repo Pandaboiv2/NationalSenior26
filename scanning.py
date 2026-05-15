@@ -1,9 +1,10 @@
+'''
 #!/usr/bin/env pybricks-micropython
 from pybricks.hubs import EV3Brick
 from pybricks.tools import wait
+'''
 from pixy2 import Pixy2
 
-ev3 = EV3Brick()
 pixy2 = Pixy2(port=2, i2c_address=0x54)
 
 COLOR_MAP = {
@@ -18,11 +19,11 @@ Y_MIN, Y_MAX = 100, 200
 
 GRID_POSITIONS = [
     # Row 1
-    (110, 115), (144, 115), (175, 115), (210, 116),
+    (107, 111), (141, 110), (173, 110), (206, 112),
     # Row 2
-    (105, 135), (142, 135), (182, 134), (220, 135),
+    (104, 134), (140, 132), (176, 132), (212, 131),
     # Row 3
-    (95, 160), (140, 160), (183, 160), (225, 160),
+    (94, 158), (136, 159), (181, 154), (220, 152),
 ]
 
 TOLERANCE = 10
@@ -44,21 +45,26 @@ def find_sig_at(blocks, target_x, target_y):
     return best_sig
 
 def scan_mosaic():
-    mosaic = []
-    result = pixy2.get_blocks(255, 12)
-    count = result[0]
-    blocks = result[1]
-    print("Detected", count, "blocks")
-    for i, (gx, gy) in enumerate(GRID_POSITIONS):
-        sig = find_sig_at(blocks, gx, gy)
-        color = COLOR_MAP[sig]
-        mosaic.append(color)
-        row = (i // 4) + 1
-        col = (i % 4) + 1
-        print("Row", row, "Col", col, "| Sig:", sig, "| Color:", color)
-    return mosaic
+    from pybricks.tools import wait
+    wait(500)
+    
+    all_results = []
+    for _ in range(5):
+        mosaic = []
+        result = pixy2.get_blocks(255, 12)
+        blocks = result[1]
+        for i, (gx, gy) in enumerate(GRID_POSITIONS):
+            sig = find_sig_at(blocks, gx, gy)
+            mosaic.append(sig)
+        all_results.append(mosaic)
+        wait(100)
+    
+    final = []
+    for i in range(12):
+        votes = [r[i] for r in all_results]
+        final.append(max(set(votes), key=votes.count))
+    
+    print("--- Final mosaic ---")
+    print(final)
+    return final
 
-ev3.speaker.beep()
-mosaic_pattern = scan_mosaic()
-print("--- Final mosaic ---")
-print(mosaic_pattern)

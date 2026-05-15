@@ -3,6 +3,7 @@ from pybricks.parameters import Port, Stop
 from pybricks.tools import wait, StopWatch
 from line_follower import pid_line_follower
 from config import ev3, left_motor, right_motor, motor_a, motor_d, colorsensorLeft, colorsensorRight
+from scanning import scan_mosaic
 
 # movement function (kind of like tht pink blocks in ev3 classroom)
 
@@ -31,17 +32,17 @@ def move_motors(left_speed, right_speed, duration_ms=None, rotations=None, degre
 
 # start of the program
 def tool():
-    right_motor.run_angle(500, 65)
+    right_motor.run_angle(500, 90)
     wait(100)
 
-    move_motors(-500, 500, rotations=0.5)
+    move_motors(-500, 500, rotations=0.6)
 
-    left_motor.run_angle(-500, 35)
+    left_motor.run_angle(-500, 90)
     wait(100)
 
     pid_line_follower(follow_sensor_port=Port.S1,
                     stop_sensor_port=Port.S4,
-                    base_speed=450,
+                    base_speed=750,
                     Kp=2, Kd=3, Ki=0,
                     target=48,
                     max_angle=1200,
@@ -52,4 +53,34 @@ def tool():
     wait(100)
 
 
+    pid_line_follower(follow_sensor_port=Port.S1,
+                    stop_sensor_port=Port.S4,
+                    base_speed=500,
+                    Kp=2, Kd=3, Ki=0,
+                    target=48,
+                    max_angle=None,
+                    stop_mode="c",
+                    stop_threshold=22,
+                    side="r",)
+    
+    wait(250)
 
+    move_motors(-500, 500, rotations=0.2)
+
+    move_motors(-500, -500, rotations=0.76)
+    wait(100)
+
+    move_motors(500, -500, rotations=0.67)
+
+    wait(100)
+
+    mosaic_pattern = scan_mosaic()
+    print(mosaic_pattern)
+
+    move_motors(-500, -500, rotatinos=1.52)
+
+    move_motors(500, -500, rotations=0.3)
+
+    motor_a.run_time(-500, 700)
+
+    
