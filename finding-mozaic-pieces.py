@@ -5,26 +5,6 @@ from line_follower import pid_line_follower
 from config import ev3, left_motor, right_motor, motor_a, motor_d, colorsensorLeft, colorsensorRight
 from outil import move_motors
 
-blue_tiles = [
-    [True, True],
-    [True, True],
-    [True, True],
-]
-green_tiles = [
-    [True, True],
-    [True, True],
-    [True, True],
-]
-yellow_tiles = [
-    [True, True],
-    [True, True],
-    [True, True],
-]
-white_tiles = [
-    [True, True],
-    [True, True],
-    [True, True],
-]
 
 def grab_tiles(target_matrix : list, target_row : int, dir : int) -> None:
     #the dir parameter is which block you want to take, either the left (-1) right (1) or both (0)
