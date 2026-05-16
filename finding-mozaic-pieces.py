@@ -50,4 +50,3 @@ def grab_tiles(target_matrix : list, target_row : int, dir : int) -> None:
             target_matrix[target_row - 1][1] = False
         else:
             print("ERROR")
-
