@@ -5,8 +5,6 @@ from line_follower import pid_line_follower
 from config import ev3, left_motor, right_motor, motor_a, motor_d, colorsensorLeft, colorsensorRight
 from scanning import scan_mosaic
 
-# movement function (kind of like tht pink blocks in ev3 classroom)
-
 mosaic_pattern = []
 
 def move_motors(left_speed, right_speed, duration_ms=None, rotations=None, degrees=None) -> None:
@@ -32,8 +30,8 @@ def move_motors(left_speed, right_speed, duration_ms=None, rotations=None, degre
         right_motor.stop(Stop.BRAKE)
         return
 
-# start of the program
 def tool():
+    '''
     #--------------------------------#
     # will go scan and take the bowl #
     right_motor.run_angle(500, 90)
@@ -56,7 +54,6 @@ def tool():
 
     wait(100)
 
-
     pid_line_follower(follow_sensor_port=Port.S1,
                     stop_sensor_port=Port.S4,
                     base_speed=450,
@@ -76,11 +73,10 @@ def tool():
     wait(100)
 
     move_motors(500, -500, rotations=0.67)
-
     wait(100)
 
-    outil.mosaic_pattern = scan_mosaic()
-    print(outil.mosaic_pattern)
+    mosaic_pattern = scan_mosaic()
+    print(mosaic_pattern)
 
     move_motors(-750, -750, rotations=1.52)
     wait(100)
@@ -95,15 +91,14 @@ def tool():
     #--------------------------------#
 
     #----------------#
-    # put the trowel #
+    # put the rectangle thing #
     move_motors(-500, -500, rotations=0.68)
     wait(100)
 
     move_motors(500, -500, rotations=2)
     wait(100)
+    # put the rectangle thing #
     #----------------#
-    # put the trowel #
-
 
     #------------------------#
     # will go place the bowl #
@@ -116,7 +111,6 @@ def tool():
     left_motor.run_angle(-500, 210)
     wait(100)
 
-
     pid_line_follower(follow_sensor_port=Port.S1,
                     stop_sensor_port=Port.S4,
                     base_speed=750,
@@ -128,6 +122,7 @@ def tool():
                     side="r",)
 
     wait(100)
+    '''
     
     pid_line_follower(follow_sensor_port=Port.S1,
                     stop_sensor_port=Port.S4,
@@ -146,14 +141,59 @@ def tool():
     move_motors(-500, -500, rotations=0.72)
     wait(100)
 
-    motor_a.run_time(1000, 750)
     wait(100)
 
+    motor_a.run_time(1200, 1000)
+    wait(100)
+
+    wait(100)
+    '''
     move_motors(500, 500, rotations=0.72)
     wait(100)
+    '''
     # will go place the bowl #
     #------------------------#
 
+    #--------------------------#
+    # will go place the trowel #
+
+    move_motors(-350, 350, rotations=0.5)
+    wait(100)
+
+    move_motors(500, 500, rotations=0.76)
+    wait(100)
+
+    move_motors(500, -500, rotations=0.5)
+
+    motor_a.run_time(-750, 750)
+    wait(100)
+
+    right_motor.run_angle(-300, 75)
+    wait(100)
+
+    move_motors(750, -750, rotations=7.5)
+    wait(100)
+
+    left_motor.run_angle(300, 75)
+    wait(100)
+
+    motor_a.run_time(1000, 750)
+    wait(100)
+
+
+
+
+
+
+
+
+    # will go place the trowel #
+    #--------------------------#
+
+    return mosaic_pattern
+
+"""
+def blue_blocks():
     #------------------------------#
     # will go take the blue blocks #
     right_motor.run_angle(500, 300)
@@ -182,6 +222,6 @@ def tool():
                     stop_threshold=22,
                     side="l",)
     wait(250)
-
     # will go take the blue blocks #
     #------------------------------#
+    """
