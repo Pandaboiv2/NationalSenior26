@@ -62,6 +62,9 @@ def pid_line_follower(follow_sensor_port=Port.S1,
         last_error = error
         wait(10)
 
-    left_motor.stop(Stop.BRAKE)
-    right_motor.stop(Stop.BRAKE)
-    ev3.speaker.beep()  
+    left_motor.run(0)
+    right_motor.run(0)
+    wait(50)
+    left_motor.hold()
+    right_motor.hold()
+    ev3.speaker.beep()

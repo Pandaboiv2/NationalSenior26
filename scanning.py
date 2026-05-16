@@ -1,8 +1,3 @@
-'''
-#!/usr/bin/env pybricks-micropython
-from pybricks.hubs import EV3Brick
-from pybricks.tools import wait
-'''
 from pixy2 import Pixy2
 
 pixy2 = Pixy2(port=2, i2c_address=0x54)
