@@ -5,6 +5,7 @@ from pybricks.parameters import Port, Stop
 from pybricks.tools import wait, StopWatch
 from line_follower import pid_line_follower
 from outil import tool
+from finding-mozaic-pieces import grab_tiles
 
 ev3 = EV3Brick()
 
