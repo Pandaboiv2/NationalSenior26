@@ -147,10 +147,7 @@ def tool():
     wait(100)
 
     wait(100)
-    '''
-    move_motors(500, 500, rotations=0.72)
-    wait(100)
-    '''
+
     # will go place the bowl #
     #------------------------#
 
@@ -160,25 +157,46 @@ def tool():
     move_motors(-350, 350, rotations=0.5)
     wait(100)
 
-    move_motors(500, 500, rotations=0.76)
+    move_motors(500, 500, rotations=0.7)
     wait(100)
 
     move_motors(500, -500, rotations=0.5)
 
-    motor_a.run_time(-750, 750)
+    motor_a.run_time(-750, 500)
     wait(100)
 
-    right_motor.run_angle(-300, 75)
+    move_motors(750, -750, rotations=4)
     wait(100)
 
-    move_motors(750, -750, rotations=7.5)
+    right_motor.run_angle(-450, 210)
     wait(100)
 
-    left_motor.run_angle(300, 75)
+    move_motors(450, -450, rotations=0.75)
     wait(100)
+
+    left_motor.run_angle(450, 210)
+    wait(100)
+
+    move_motors(500, -500, rotations=2.6)
 
     motor_a.run_time(1000, 750)
     wait(100)
+
+    pid_line_follower(follow_sensor_port=Port.S4,
+                    stop_sensor_port=Port.S1,
+                    base_speed=250,
+                    Kp=3, Kd=4, Ki=0,
+                    target=48,
+                    max_angle=None,
+                    stop_mode="c",
+                    stop_threshold=22,
+                    side="r",)
+    
+    wait(100)
+
+    move_motors(300, 300, rotations=0.76)
+
+
 
 
 
