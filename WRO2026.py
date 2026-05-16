@@ -5,7 +5,7 @@ from pybricks.parameters import Port, Stop
 from pybricks.tools import wait, StopWatch
 from line_follower import pid_line_follower
 from outil import tool
-from finding-mozaic-pieces import grab_tiles
+from finding_mozaic_pieces import grab_first_four_tiles
 
 ev3 = EV3Brick()
 
@@ -37,4 +37,5 @@ grabbed_tiles = [
 #back of the robot
 ]
 
-tool()
+mosaic_pattern = tool()
+grab_first_four_tiles(mosaic_pattern)

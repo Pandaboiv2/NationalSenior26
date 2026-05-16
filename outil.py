@@ -4,7 +4,6 @@ from pybricks.tools import wait, StopWatch
 from line_follower import pid_line_follower
 from config import ev3, left_motor, right_motor, motor_a, motor_d, colorsensorLeft, colorsensorRight
 from scanning import scan_mosaic
-import outil
 
 # movement function (kind of like tht pink blocks in ev3 classroom)
 
