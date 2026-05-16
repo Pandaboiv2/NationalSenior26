@@ -8,6 +8,27 @@ from outil import tool
 
 ev3 = EV3Brick()
 
+blue_tiles = [
+    [True, True],
+    [True, True],
+    [True, True],
+]
+green_tiles = [
+    [True, True],
+    [True, True],
+    [True, True],
+]
+yellow_tiles = [
+    [True, True],
+    [True, True],
+    [True, True],
+]
+white_tiles = [
+    [True, True],
+    [True, True],
+    [True, True],
+]
+
 grabbed_tiles = [
 #front of the robot
     0, 0,
