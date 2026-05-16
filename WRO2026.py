@@ -8,4 +8,11 @@ from outil import tool
 
 ev3 = EV3Brick()
 
+grabbed_tiles = [
+#front of the robot
+    0, 0,
+    0, 0,
+#back of the robot
+]
+
 tool()

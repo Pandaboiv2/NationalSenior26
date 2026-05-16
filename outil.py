@@ -7,7 +7,7 @@ from scanning import scan_mosaic
 
 # movement function (kind of like tht pink blocks in ev3 classroom)
 
-def move_motors(left_speed, right_speed, duration_ms=None, rotations=None, degrees=None):
+def move_motors(left_speed, right_speed, duration_ms=None, rotations=None, degrees=None) -> None:
     if rotations is not None:
         angle = 360 * rotations
         left_motor.run_angle(left_speed, angle, Stop.BRAKE, wait=False)
