@@ -5,6 +5,9 @@ from line_follower import pid_line_follower
 from config import ev3, left_motor, right_motor, motor_a, motor_d, colorsensorLeft, colorsensorRight
 from scanning import scan_mosaic
 
+
+#hello
+
 # movement function (kind of like tht pink blocks in ev3 classroom)
 
 def move_motors(left_speed, right_speed, duration_ms=None, rotations=None, degrees=None):
