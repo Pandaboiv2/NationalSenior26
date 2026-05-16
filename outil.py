@@ -31,7 +31,6 @@ def move_motors(left_speed, right_speed, duration_ms=None, rotations=None, degre
         return
 
 def tool():
-    '''
     #--------------------------------#
     # will go scan and take the bowl #
     right_motor.run_angle(500, 90)
@@ -122,7 +121,6 @@ def tool():
                     side="r",)
 
     wait(100)
-    '''
     
     pid_line_follower(follow_sensor_port=Port.S1,
                     stop_sensor_port=Port.S4,
@@ -196,50 +194,7 @@ def tool():
 
     move_motors(300, 300, rotations=0.76)
 
-
-
-
-
-
-
-
-
-
     # will go place the trowel #
     #--------------------------#
 
     return mosaic_pattern
-
-"""
-def blue_blocks():
-    #------------------------------#
-    # will go take the blue blocks #
-    right_motor.run_angle(500, 300)
-    wait(100)
-
-    while colorsensorRight.reflection() > 22:
-        left_motor.run(-500)
-        right_motor.run(500)
-
-    left_motor.hold()
-    right_motor.hold()
-
-    move_motors(-200, 200, rotations=0.15)
-    wait(100)
-
-    move_motors(-300, -300, rotations=0.4)
-    wait(100)
-    
-    pid_line_follower(follow_sensor_port=Port.S1,
-                    stop_sensor_port=Port.S4,
-                    base_speed=350,
-                    Kp=2, Kd=3, Ki=0,
-                    target=48,
-                    max_angle=None,
-                    stop_mode="c",
-                    stop_threshold=22,
-                    side="l",)
-    wait(250)
-    # will go take the blue blocks #
-    #------------------------------#
-    """
