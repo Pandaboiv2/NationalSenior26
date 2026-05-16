@@ -4,8 +4,11 @@ from pybricks.tools import wait, StopWatch
 from line_follower import pid_line_follower
 from config import ev3, left_motor, right_motor, motor_a, motor_d, colorsensorLeft, colorsensorRight
 from scanning import scan_mosaic
+import outil
 
 # movement function (kind of like tht pink blocks in ev3 classroom)
+
+mosaic_pattern = []
 
 def move_motors(left_speed, right_speed, duration_ms=None, rotations=None, degrees=None) -> None:
     if rotations is not None:
@@ -77,8 +80,8 @@ def tool():
 
     wait(100)
 
-    mosaic_pattern = scan_mosaic()
-    print(mosaic_pattern)
+    outil.mosaic_pattern = scan_mosaic()
+    print(outil.mosaic_pattern)
 
     move_motors(-750, -750, rotations=1.52)
     wait(100)
