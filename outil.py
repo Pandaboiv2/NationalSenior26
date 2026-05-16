@@ -57,7 +57,7 @@ def tool():
 
     pid_line_follower(follow_sensor_port=Port.S1,
                     stop_sensor_port=Port.S4,
-                    base_speed=300,
+                    base_speed=450,
                     Kp=2, Kd=3, Ki=0,
                     target=48,
                     max_angle=None,
@@ -70,7 +70,7 @@ def tool():
     move_motors(-500, 500, rotations=0.2)
     wait(100)
 
-    move_motors(-500, -500, rotations=0.72)
+    move_motors(-500, -500, rotations=0.76)
     wait(100)
 
     move_motors(500, -500, rotations=0.67)
