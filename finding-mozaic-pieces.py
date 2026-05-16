@@ -23,20 +23,16 @@ def grab_tiles(target_matrix : list, target_row : int, dir : int) -> None:
         move farwards by 140 cm
     """
 
-    #The second way requires a lot less code
-    #However, it needs for everything to be very VERY precise and for it to follow a set order
-    #2. Have a move forwards by 100+(target_row)*20 cm
-    """
-    for example:
-    move forwards by 100 (base distance) + target_row * 20 (intervals between each tile) cm
-    """
-    move_motors(-500, 500, rotations=0.3 + target_row * 0.2)
-
     if abs(dir) > 0:
         if not target_matrix[target_row - 1][max(0, dir)]:
             target_matrix[target_row - 1][max(0, dir)] = False
             #Furthermore, to be able to grab only left or only right, your robot needs to be offset from the center
             #of all the tiles. You can easily solve this with this program (make it at the begining tho)
+            move_motors(500*dir, -500*dir, rotations=0.3)
+            move_motors(-500, 500, rotations=0.5)
+            move_motors(-500*dir, -500*dir, rotations=0.3)
+            move_motors(500, -500, rotations=0.4)
+            target_matrix[target_row - 1][max(0, dir)] = False
             """
             move_right by -dir*50 cm.
             or you can equally put:
@@ -50,3 +46,14 @@ def grab_tiles(target_matrix : list, target_row : int, dir : int) -> None:
             target_matrix[target_row - 1][1] = False
         else:
             print("ERROR")
+
+    #The second way requires a lot less code
+    #However, it needs for everything to be very VERY precise and for it to follow a set order
+    #2. Have a move forwards by 100+(target_row)*20 cm
+    """
+    for example:
+    move forwards by 100 (base distance) + target_row * 20 (intervals between each tile) cm
+    """
+    move_motors(-500, 500, rotations=0.3 + target_row * 0.2)
+    #Code that lowers the lifter
+    #Code that grabs the tile
