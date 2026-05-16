@@ -31,6 +31,7 @@ def grab_tiles(target_matrix : list, target_row : int, dir : int) -> None:
             move_motors(500*dir, -500*dir, rotations=0.3)
             move_motors(-500, 500, rotations=0.5)
             move_motors(-500*dir, -500*dir, rotations=0.3)
+            move_motors(500, -500, rotations=0.4)
             target_matrix[target_row - 1][max(0, dir)] = False
             """
             move_right by -dir*50 cm.
