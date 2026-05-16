@@ -8,7 +8,7 @@ from outil import move_motors
 
 def grab_tiles(target_matrix : list, target_row : int, dir : int) -> None:
     #the dir parameter is which block you want to take, either the left (-1) right (1) or both (0)
-    #the target_row parameter is which row of tiles you want to grab. the first row is 3, second 2 and last row 1
+    #the target_row parameter is which row of tiles you want to grab. the first row is 1, second 2 and last row 3
     #target_matrix is which matrix you want to take (the lists that I made on top containing all tile colors)
 
     #There are 2 ways you can go the right distance
