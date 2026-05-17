@@ -85,7 +85,6 @@ def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, yellow_ti
     if mosaic_pattern[0] == mosaic_pattern[1] and mosaic_pattern[4] == mosaic_pattern[5] and mosaic_pattern[0] == mosaic_pattern[4]:
         move_to_tiles(mosaic_pattern[0])
         move_motors(300, 300, rotations=0.74)
-        wait(1000)
         grab_tiles(array_of_colors[mosaic_pattern[0]], 2, 0)
         array_of_colors[mosaic_pattern[0]][0][0] = False
         array_of_colors[mosaic_pattern[0]][0][1] = False
@@ -93,8 +92,11 @@ def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, yellow_ti
         grabbed_tiles[1] = mosaic_pattern[0]
         grabbed_tiles[4] = mosaic_pattern[0]
         grabbed_tiles[5] = mosaic_pattern[0]
+
     elif mosaic_pattern[0] == mosaic_pattern[4] and mosaic_pattern[1] == mosaic_pattern[5]:
         #676767676767
+        move_to_tiles(mosaic_pattern[0])
+        move_motors(300, 300, rotations=0.74)
         grab_tiles(array_of_colors[mosaic_pattern[0]], 2, 0)
         #move to the correct color place
         grab_tiles(array_of_colors[mosaic_pattern[1]], 2, 0)
