@@ -28,10 +28,9 @@ def grab_tiles(target_matrix : list, target_row : int, dir : int) -> list:
             target_matrix[target_row - 1][max(0, dir)] = False
             #Furthermore, to be able to grab only left or only right, your robot needs to be offset from the center
             #of all the tiles. You can easily solve this with this program (make it at the begining tho)
-            move_motors(500*dir, -500*dir, rotations=0.3)
-            move_motors(-500, 500, rotations=0.5)
-            move_motors(-500*dir, -500*dir, rotations=0.3)
-            move_motors(500, -500, rotations=0.4)
+            move_motors(-500, -500, rotations=0.72)
+            move_motors(-500*dir, 500*dir, rotations=0.35)
+            move_motors(500, 500, rotations=0.72)
             target_matrix[target_row - 1][max(0, dir)] = False
             """
             move_right by -dir*50 cm.
@@ -52,7 +51,7 @@ def grab_tiles(target_matrix : list, target_row : int, dir : int) -> list:
     motor_a.run_time(600, 500)
     motor_d.run(-500)
     wait(500)
-    motor_a.run_angle(-500, 150)
+    motor_a.run_time(-500, 200)
     move_motors(300, -300, rotations=0.45 + target_row * 0.25)
     return target_matrix
 
@@ -78,7 +77,6 @@ def move_to_tiles(color : int):
     left_motor.hold()
     right_motor.hold()
 
-#this is a comment
 
 def go_to_some_tiles(target_color : int, starting_color : int) -> None:
     get_distance = 0.5 * (target_color - starting_color)
@@ -109,11 +107,11 @@ def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, color_arr
         #676767676767
         move_to_tiles(mosaic_pattern[0])
         move_motors(300, 300, rotations=0.74)
-        grab_tiles(array_of_colors[mosaic_pattern[0]], 1, 0)
+        grab_tiles(color_arrays[mosaic_pattern[0] - 1], 1, 0)
         move_motors(-300, -300, rotations=0.75)
         go_to_some_tiles(mosaic_pattern[0], mosaic_pattern[1])
         move_motors(300, 300, rotations=0.74)
-        grab_tiles(array_of_colors[mosaic_pattern[1]], 2, 0)
+        grab_tiles(color_arrays[mosaic_pattern[1] - 1], 2, 0)
         move_motors(-300, -300, rotations=0.75)
 
         #front tiles
@@ -130,11 +128,61 @@ def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, color_arr
         move_motors(-300, 300, rotations=0.5)
 
         return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3]
-
     elif mosaic_pattern[1] == mosaic_pattern[4] and mosaic_pattern[0] == mosaic_pattern[5]:
-        #this is a criss cross thingy
-        pass
-        #i dont really know how to do this one D:
+        # criss cross case
+        first_color = min(mosaic_pattern[0], mosaic_pattern[1])
+        second_color = max(mosaic_pattern[0], mosaic_pattern[1])
+
+        # figure out which side each color is on
+        if mosaic_pattern[0] == first_color:
+            first_dir = -1   # first color is on left
+            second_dir = 1   # second color is on right
+        else:
+            first_dir = 1    # first color is on right
+            second_dir = -1  # second color is on left
+
+        # Trip 1 — grab back slot of first color (closest)
+        move_to_tiles(first_color)
+        move_motors(300, 300, rotations=0.74)
+        color_arrays[first_color - 1] = grab_tiles(color_arrays[first_color - 1], 1, first_dir)
+        move_motors(-300, -300, rotations=0.74)
+        if first_dir == -1:
+            grabbed_tiles[2] = first_color  # back left
+        else:
+            grabbed_tiles[1] = first_color  # front right
+
+        # Trip 2 — grab back slot of second color
+        move_to_tiles(second_color)
+        move_motors(300, 300, rotations=0.74)
+        color_arrays[second_color - 1] = grab_tiles(color_arrays[second_color - 1], 1, second_dir)
+        move_motors(-300, -300, rotations=0.74)
+        if second_dir == -1:
+            grabbed_tiles[3] = second_color  # back right
+        else:
+            grabbed_tiles[0] = second_color  # front left
+
+        # Trip 3 — grab front slot of second color, then front slot of first color
+        move_to_tiles(second_color)
+        move_motors(300, 300, rotations=0.74)
+        color_arrays[second_color - 1] = grab_tiles(color_arrays[second_color - 1], 1, -second_dir)
+        move_motors(-300, -300, rotations=0.74)
+        if second_dir == -1:
+            grabbed_tiles[0] = second_color  # front left
+        else:
+            grabbed_tiles[3] = second_color  # back right
+
+        # without going back to start, go to first color
+        go_to_some_tiles(first_color, second_color)
+        move_motors(300, 300, rotations=0.74)
+        color_arrays[first_color - 1] = grab_tiles(color_arrays[first_color - 1], 1, -first_dir)
+        move_motors(-300, -300, rotations=0.74)
+        if first_dir == -1:
+            grabbed_tiles[1] = first_color  # front right
+        else:
+            grabbed_tiles[2] = first_color  # back left
+
+        return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3]
+
     elif mosaic_pattern[0] == mosaic_pattern[1] and mosaic_pattern[4] == mosaic_pattern[5]:
         #for this one, all the tiles are aligned vertically
         pass
@@ -142,3 +190,68 @@ def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, color_arr
         #for this one, all the tiles are different
         #plus im too lazy to continue so im just gonna leave it like this
         pass
+
+
+
+
+
+
+
+
+
+'''
+    elif mosaic_pattern[1] == mosaic_pattern[4] and mosaic_pattern[0] == mosaic_pattern[5]:
+        # criss cross case
+        first_color = min(mosaic_pattern[0], mosaic_pattern[1])
+        second_color = max(mosaic_pattern[0], mosaic_pattern[1])
+
+        # figure out which side each color is on
+        if mosaic_pattern[0] == first_color:
+            first_dir = -1   # first color is on left
+            second_dir = 1   # second color is on right
+        else:
+            first_dir = 1    # first color is on right
+            second_dir = -1  # second color is on left
+
+        # Trip 1 — grab back slot of first color
+        move_to_tiles(first_color)
+        move_motors(300, 300, rotations=0.74)
+        color_arrays[first_color - 1] = grab_tiles(color_arrays[first_color - 1], 1, first_dir)
+        move_motors(-300, -300, rotations=0.74)
+        if first_dir == -1:
+            grabbed_tiles[2] = first_color  # back left
+        else:
+            grabbed_tiles[1] = first_color  # front right
+
+        # Trip 2 — grab front slot of first color
+        move_to_tiles(first_color)
+        move_motors(300, 300, rotations=0.74)
+        color_arrays[first_color - 1] = grab_tiles(color_arrays[first_color - 1], 1, -first_dir)
+        move_motors(-300, -300, rotations=0.74)
+        if first_dir == -1:
+            grabbed_tiles[1] = first_color  # front right
+        else:
+            grabbed_tiles[2] = first_color  # back left
+
+        # Trip 3 — grab back slot of second color
+        move_to_tiles(second_color)
+        move_motors(300, 300, rotations=0.74)
+        color_arrays[second_color - 1] = grab_tiles(color_arrays[second_color - 1], 1, second_dir)
+        move_motors(-300, -300, rotations=0.74)
+        if second_dir == -1:
+            grabbed_tiles[3] = second_color  # back right
+        else:
+            grabbed_tiles[0] = second_color  # front left
+
+        # Trip 4 — grab front slot of second color
+        move_to_tiles(second_color)
+        move_motors(300, 300, rotations=0.74)
+        color_arrays[second_color - 1] = grab_tiles(color_arrays[second_color - 1], 1, -second_dir)
+        move_motors(-300, -300, rotations=0.74)
+        if second_dir == -1:
+            grabbed_tiles[0] = second_color  # front left
+        else:
+            grabbed_tiles[3] = second_color  # back right
+
+        return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3]
+'''
