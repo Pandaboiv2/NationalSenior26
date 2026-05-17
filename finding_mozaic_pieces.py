@@ -4,6 +4,7 @@ from pybricks.tools import wait, StopWatch
 from line_follower import pid_line_follower
 from config import ev3, left_motor, right_motor, motor_a, motor_d, colorsensorLeft, colorsensorRight
 from outil import move_motors
+import WRO2026
 
 def grab_tiles(target_matrix : list, target_row : int, dir : int) -> None:
     #the dir parameter is which block you want to take, either the left (-1) right (1) or both (0)
@@ -77,10 +78,10 @@ def move_to_tiles(color : int):
 
 def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, yellow_tiles : list, blue_tiles : list, green_tiles : list, white_tiles : list) -> None:
     array_of_colors = {
-        1: yellow_tiles,
-        2: blue_tiles,
-        3: green_tiles,
-        4: white_tiles,
+        1: WRO2026.yellow_tiles,
+        2: WRO2026.blue_tiles,
+        3: WRO2026.green_tiles,
+        4: WRO2026.white_tiles,
     }
     if mosaic_pattern[0] == mosaic_pattern[1] and mosaic_pattern[4] == mosaic_pattern[5] and mosaic_pattern[0] == mosaic_pattern[4]:
         move_to_tiles(mosaic_pattern[0])
@@ -89,19 +90,28 @@ def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, yellow_ti
         grab_tiles(array_of_colors[mosaic_pattern[0]], 2, 0)
         array_of_colors[mosaic_pattern[0]][0][0] = False
         array_of_colors[mosaic_pattern[0]][0][1] = False
-        grabbed_tiles[0] = mosaic_pattern[0]
-        grabbed_tiles[1] = mosaic_pattern[0]
-        grabbed_tiles[4] = mosaic_pattern[0]
-        grabbed_tiles[5] = mosaic_pattern[0]
+        print(array_of_colors[mosaic_pattern[0]])
+        WRO2026.grabbed_tiles[0] = mosaic_pattern[0]
+        WRO2026.grabbed_tiles[1] = mosaic_pattern[0]
+        WRO2026.grabbed_tiles[2] = mosaic_pattern[0]
+        WRO2026.grabbed_tiles[3] = mosaic_pattern[0]
+        distance_to_move_back = 0.25 * (mosaic_pattern[0] - 2.5)
+        move_motors(-300, -300, rotations=0.74)
+        move_motors(-300, 300, rotations=distance_to_move_back)
+        move_motors(-300, -300, rotations=0.74)
+        move_motors(-300, 300, rotations=0.5)
+        #drop blocks code
+    
     elif mosaic_pattern[0] == mosaic_pattern[4] and mosaic_pattern[1] == mosaic_pattern[5]:
         #676767676767
+        #if u delete this, i eat ur grandma -Mattox
         grab_tiles(array_of_colors[mosaic_pattern[0]], 2, 0)
         #move to the correct color place
         grab_tiles(array_of_colors[mosaic_pattern[1]], 2, 0)
-        grabbed_tiles[0] = 1
-        grabbed_tiles[1] = 1
-        grabbed_tiles[4] = 1
-        grabbed_tiles[5] = 1
+        WRO2026.grabbed_tiles[0] = 1
+        WRO2026.grabbed_tiles[1] = 1
+        WRO2026.grabbed_tiles[2] = 1
+        WRO2026.grabbed_tiles[3] = 1
     elif mosaic_pattern[1] == mosaic_pattern[4] and mosaic_pattern[0] == mosaic_pattern[5]:
         #this is a criss cross thingy
         pass
