@@ -5,6 +5,7 @@ from line_follower import pid_line_follower
 from config import ev3, left_motor, right_motor, motor_a, motor_d, colorsensorLeft, colorsensorRight
 from outil import move_motors
 import wro2026
+import wro2026
 
 def grab_tiles(target_matrix : list, target_row : int, dir : int) -> None:
     #the dir parameter is which block you want to take, either the left (-1) right (1) or both (0)
@@ -83,11 +84,14 @@ def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, yellow_ti
         2: wro2026.blue_tiles,
         3: wro2026.green_tiles,
         4: wro2026.white_tiles,
+        1: wro2026.yellow_tiles,
+        2: wro2026.blue_tiles,
+        3: wro2026.green_tiles,
+        4: wro2026.white_tiles,
     }
     if mosaic_pattern[0] == mosaic_pattern[1] and mosaic_pattern[4] == mosaic_pattern[5] and mosaic_pattern[0] == mosaic_pattern[4]:
         move_to_tiles(mosaic_pattern[0])
         move_motors(300, 300, rotations=0.74)
-        wait(1000)
         grab_tiles(array_of_colors[mosaic_pattern[0]], 2, 0)
         array_of_colors[mosaic_pattern[0]][0][0] = False
         array_of_colors[mosaic_pattern[0]][0][1] = False
@@ -106,10 +110,13 @@ def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, yellow_ti
     
     elif mosaic_pattern[0] == mosaic_pattern[4] and mosaic_pattern[1] == mosaic_pattern[5]:
         #676767676767
-        #if u delete this, i eat ur grandma -Mattox
         grab_tiles(array_of_colors[mosaic_pattern[0]], 2, 0)
         #move to the correct color place
         grab_tiles(array_of_colors[mosaic_pattern[1]], 2, 0)
+        wro2026.grabbed_tiles[0] = 1
+        wro2026.grabbed_tiles[1] = 1
+        wro2026.grabbed_tiles[2] = 1
+        wro2026.grabbed_tiles[3] = 1
         wro2026.grabbed_tiles[0] = 1
         wro2026.grabbed_tiles[1] = 1
         wro2026.grabbed_tiles[2] = 1
