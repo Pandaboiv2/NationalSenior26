@@ -75,6 +75,7 @@ def move_to_tiles(color : int):
     left_motor.hold()
     right_motor.hold()
 
+#this is a comment
 
 def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, yellow_tiles : list, blue_tiles : list, green_tiles : list, white_tiles : list) -> None:
     array_of_colors = {
