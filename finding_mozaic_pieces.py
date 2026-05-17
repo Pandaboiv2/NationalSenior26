@@ -49,8 +49,8 @@ def grab_tiles(target_matrix : list, target_row : int, dir : int) -> list:
     #code that makes you go back to the original position (the one you were at before you moved to the tiles)
 
     move_motors(-300, 300, rotations=0.45 + target_row * 0.25)
-    motor_a.run_time(750, 700)
-    motor_d.run_time(-1000, 500)
+    motor_a.run_time(750, 600)
+    motor_d.run_time(-500, 300)
     move_motors(300, -300, rotations=0.45 + target_row * 0.25)
     return target_matrix
 
@@ -95,8 +95,8 @@ def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, color_arr
         grabbed_tiles[2] = mosaic_pattern[0]
         grabbed_tiles[3] = mosaic_pattern[0]
 
-        distance_to_move_back = 0.50 * (mosaic_pattern[0] - 2.5)
-        move_motors(300, 300, rotations=0.74)
+        distance_to_move_back = 1 * (mosaic_pattern[0] - 2.5)
+        move_motors(300, 300, rotations=0.76)
         move_motors(-300, 300, rotations=distance_to_move_back)
         move_motors(300, 300, rotations=0.74)
         move_motors(-300, 300, rotations=0.5)
@@ -126,7 +126,7 @@ def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, color_arr
         move_motors(-300, 300, rotations=distance_to_move_back)
         move_motors(300, 300, rotations=0.74)
         move_motors(-300, 300, rotations=0.5)
-#hmm
+
         return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3]
 
     elif mosaic_pattern[1] == mosaic_pattern[4] and mosaic_pattern[0] == mosaic_pattern[5]:

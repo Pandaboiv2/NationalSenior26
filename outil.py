@@ -182,8 +182,12 @@ def tool():
     wait(100)
     '''
 
+    '''
     mosaic_pattern = scan_mosaic()
     print(mosaic_pattern)
+    '''
+
+    mosaic_pattern = [1, 1, 1, 1, 2, 1, 2, 3, 4, 2, 1, 1]
 
 
     pid_line_follower(follow_sensor_port=Port.S4,
@@ -205,24 +209,6 @@ def tool():
 
     motor_a.run_time(-500, 500)
     wait(250)
-
-
-
-
-
-
-    '''
-    move_motors(-300, 300, rotations=1.05)
-    wait(100)
-    move_motors(-300, 300, rotations=0.90)
-
-    move_motors(300, 300, rotations=0.74)
-
-    move_motors(-300, 300, rotations=0.6)
-    wait(1000)
-    move_motors(-300, 300, rotations=0.2)
-    wait(10000)
-    '''
     # will go place the trowel #
     #--------------------------#
 
