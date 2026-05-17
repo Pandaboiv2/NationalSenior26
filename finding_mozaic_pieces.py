@@ -47,19 +47,33 @@ def grab_tiles(target_matrix : list, target_row : int, dir : int) -> None:
             print("ERROR")
     #code that makes you go back to the original position (the one you were at before you moved to the tiles)
 
-    #The second way requires a lot less code
-    #However, it needs for everything to be very VERY precise and for it to follow a set order
-    #2. Have a move forwards by 100+(target_row)*20 cm
-    """
-    for example:
-    move forwards by 100 (base distance) + target_row * 20 (intervals between each tile) cm
-    """
-    move_motors(-300, 300, rotations=0.6 + target_row * 0.25)
-    #Code that lowers the lifter
-    #Code that grabs the tile
+    move_motors(-300, 300, rotations=0.45 + target_row * 0.25)
+    motor_a.run_time(750, 700)
+    motor_d.run_time(-1000, 500)
+    move_motors(300, -300, rotations=0.45 + target_row * 0.25)
 
 def move_to_tiles(color : int):
-    move_motors(-300, 300, rotations=1.05 + 0.9 * (color-1))
+    black_line_counter = 0
+
+    while black_line_counter < color:
+        pid_line_follower(follow_sensor_port=Port.S4,
+                stop_sensor_port=Port.S1,
+                base_speed=250,
+                Kp=2, Kd=3, Ki=0,
+                target=48,
+                max_angle=None,
+                stop_mode="c",
+                stop_threshold=22,
+                side="l")
+        
+        black_line_counter += 1
+        print(black_line_counter)
+        ev3.speaker.beep()
+        move_motors(-300, 300, rotations=0.25)
+
+    left_motor.hold()
+    right_motor.hold()
+
 
 def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, yellow_tiles : list, blue_tiles : list, green_tiles : list, white_tiles : list) -> None:
     array_of_colors = {
@@ -70,14 +84,15 @@ def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, yellow_ti
     }
     if mosaic_pattern[0] == mosaic_pattern[1] and mosaic_pattern[4] == mosaic_pattern[5] and mosaic_pattern[0] == mosaic_pattern[4]:
         move_to_tiles(mosaic_pattern[0])
-        move_motors(300, 300, rotations=0.76)
+        move_motors(300, 300, rotations=0.74)
         wait(1000)
-        grab_tiles(array_of_colors[mosaic_pattern[0]], 1, 0)
         grab_tiles(array_of_colors[mosaic_pattern[0]], 2, 0)
-        grabbed_tiles[0] = 1
-        grabbed_tiles[1] = 1
-        grabbed_tiles[4] = 1
-        grabbed_tiles[5] = 1
+        array_of_colors[mosaic_pattern[0]][0][0] = False
+        array_of_colors[mosaic_pattern[0]][0][1] = False
+        grabbed_tiles[0] = mosaic_pattern[0]
+        grabbed_tiles[1] = mosaic_pattern[0]
+        grabbed_tiles[4] = mosaic_pattern[0]
+        grabbed_tiles[5] = mosaic_pattern[0]
     elif mosaic_pattern[0] == mosaic_pattern[4] and mosaic_pattern[1] == mosaic_pattern[5]:
         #676767676767
         grab_tiles(array_of_colors[mosaic_pattern[0]], 2, 0)

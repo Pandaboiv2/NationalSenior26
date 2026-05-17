@@ -67,4 +67,4 @@ def pid_line_follower(follow_sensor_port=Port.S1,
     wait(50)
     left_motor.hold()
     right_motor.hold()
-    ev3.speaker.beep()
+    #ev3.speaker.beep()

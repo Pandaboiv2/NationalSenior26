@@ -198,12 +198,20 @@ def tool():
     
     wait(100)
 
+    move_motors(-300, 300, rotations=0.1)
+
     move_motors(300, 300, rotations=0.76)
     wait(250)
 
     motor_a.run_time(-500, 500)
     wait(250)
 
+
+
+
+
+
+    '''
     move_motors(-300, 300, rotations=1.05)
     wait(100)
     move_motors(-300, 300, rotations=0.90)
@@ -214,6 +222,7 @@ def tool():
     wait(1000)
     move_motors(-300, 300, rotations=0.2)
     wait(10000)
+    '''
     # will go place the trowel #
     #--------------------------#
 
