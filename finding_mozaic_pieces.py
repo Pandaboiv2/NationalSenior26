@@ -78,6 +78,10 @@ def move_to_tiles(color : int):
 
 #this is a comment
 
+def go_to_some_tiles(target_color : int, starting_color : int) -> None:
+    get_distance = 0.5 * (target_color - starting_color)
+    move_motors(-300, 300, rotations=get_distance)
+
 def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, color_arrays : list):
     if mosaic_pattern[0] == mosaic_pattern[1] and mosaic_pattern[4] == mosaic_pattern[5] and mosaic_pattern[0] == mosaic_pattern[4]:
         move_to_tiles(mosaic_pattern[0])
@@ -101,13 +105,30 @@ def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, color_arr
     
     elif mosaic_pattern[0] == mosaic_pattern[4] and mosaic_pattern[1] == mosaic_pattern[5]:
         #676767676767
-        grab_tiles(array_of_colors[mosaic_pattern[0]], 2, 0)
-        #move to the correct color place
+        move_to_tiles(mosaic_pattern[0])
+        move_motors(300, 300, rotations=0.74)
+        grab_tiles(array_of_colors[mosaic_pattern[0]], 1, 0)
+        move_motors(-300, -300, rotations=0.75)
+        go_to_some_tiles(mosaic_pattern[0], mosaic_pattern[1])
+        move_motors(300, 300, rotations=0.74)
         grab_tiles(array_of_colors[mosaic_pattern[1]], 2, 0)
-        wro2026.grabbed_tiles[0] = 1
-        wro2026.grabbed_tiles[1] = 1
-        wro2026.grabbed_tiles[2] = 1
-        wro2026.grabbed_tiles[3] = 1
+        move_motors(-300, -300, rotations=0.75)
+
+        #front tiles
+        grabbed_tiles[0] = mosaic_pattern[0]
+        grabbed_tiles[1] = mosaic_pattern[0]
+        #back tiles
+        grabbed_tiles[2] = mosaic_pattern[1]
+        grabbed_tiles[3] = mosaic_pattern[1]
+
+        distance_to_move_back = 0.50 * (mosaic_pattern[1] - 2.5)
+        move_motors(300, 300, rotations=0.74)
+        move_motors(-300, 300, rotations=distance_to_move_back)
+        move_motors(300, 300, rotations=0.74)
+        move_motors(-300, 300, rotations=0.5)
+
+        return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3]
+
     elif mosaic_pattern[1] == mosaic_pattern[4] and mosaic_pattern[0] == mosaic_pattern[5]:
         #this is a criss cross thingy
         pass
