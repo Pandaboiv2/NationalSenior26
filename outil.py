@@ -181,7 +181,7 @@ def tool():
     motor_a.run_time(1000, 750)
     wait(100)
     '''
-    
+
     mosaic_pattern = scan_mosaic()
     print(mosaic_pattern)
 

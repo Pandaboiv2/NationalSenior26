@@ -4,9 +4,9 @@ from pybricks.tools import wait, StopWatch
 from line_follower import pid_line_follower
 from config import ev3, left_motor, right_motor, motor_a, motor_d, colorsensorLeft, colorsensorRight
 from outil import move_motors
-import wro2026
 
-def grab_tiles(target_matrix : list, target_row : int, dir : int) -> None:
+
+def grab_tiles(target_matrix : list, target_row : int, dir : int) -> list:
     #the dir parameter is which block you want to take, either the left (-1) right (1) or both (0)
     #the target_row parameter is which row of tiles you want to grab. the first row is 1, second 2 and last row 3
     #target_matrix is which matrix you want to take (the lists that I made on top containing all tile colors)
@@ -52,6 +52,7 @@ def grab_tiles(target_matrix : list, target_row : int, dir : int) -> None:
     motor_a.run_time(750, 700)
     motor_d.run_time(-1000, 500)
     move_motors(300, -300, rotations=0.45 + target_row * 0.25)
+    return target_matrix
 
 def move_to_tiles(color : int):
     black_line_counter = 0
@@ -77,31 +78,26 @@ def move_to_tiles(color : int):
 
 #this is a comment
 
-def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, yellow_tiles : list, blue_tiles : list, green_tiles : list, white_tiles : list) -> None:
-    array_of_colors = {
-        1: wro2026.yellow_tiles,
-        2: wro2026.blue_tiles,
-        3: wro2026.green_tiles,
-        4: wro2026.white_tiles,
-    }
+def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, color_arrays : list):
     if mosaic_pattern[0] == mosaic_pattern[1] and mosaic_pattern[4] == mosaic_pattern[5] and mosaic_pattern[0] == mosaic_pattern[4]:
         move_to_tiles(mosaic_pattern[0])
         move_motors(300, 300, rotations=0.74)
-        grab_tiles(array_of_colors[mosaic_pattern[0]], 2, 0)
-        array_of_colors[mosaic_pattern[0]][0][0] = False
-        array_of_colors[mosaic_pattern[0]][0][1] = False
-        print(array_of_colors[mosaic_pattern[0]])
-        wro2026.grabbed_tiles[0] = mosaic_pattern[0]
-        wro2026.grabbed_tiles[1] = mosaic_pattern[0]
-        wro2026.grabbed_tiles[2] = mosaic_pattern[0]
-        wro2026.grabbed_tiles[3] = mosaic_pattern[0]
+        color_arrays[mosaic_pattern[0] - 1] = grab_tiles(color_arrays[mosaic_pattern[0] - 1], 2, 0)
+        color_arrays[mosaic_pattern[0] - 1][0][0] = False
+        color_arrays[mosaic_pattern[0] - 1][0][1] = False
+        print(color_arrays[mosaic_pattern[0] - 1])
+        grabbed_tiles[0] = mosaic_pattern[0]
+        grabbed_tiles[1] = mosaic_pattern[0]
+        grabbed_tiles[2] = mosaic_pattern[0]
+        grabbed_tiles[3] = mosaic_pattern[0]
 
-        distance_to_move_back = 0.25 * (mosaic_pattern[0] - 2.5)
-        move_motors(-300, -300, rotations=0.74)
+        distance_to_move_back = 0.50 * (mosaic_pattern[0] - 2.5)
+        move_motors(300, 300, rotations=0.74)
         move_motors(-300, 300, rotations=distance_to_move_back)
-        move_motors(-300, -300, rotations=0.74)
+        move_motors(300, 300, rotations=0.74)
         move_motors(-300, 300, rotations=0.5)
         #drop blocks code
+        return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3]
     
     elif mosaic_pattern[0] == mosaic_pattern[4] and mosaic_pattern[1] == mosaic_pattern[5]:
         #676767676767
