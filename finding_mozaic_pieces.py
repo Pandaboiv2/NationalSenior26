@@ -126,7 +126,7 @@ def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, color_arr
         move_motors(-300, 300, rotations=distance_to_move_back)
         move_motors(300, 300, rotations=0.74)
         move_motors(-300, 300, rotations=0.5)
-
+#hmm
         return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3]
 
     elif mosaic_pattern[1] == mosaic_pattern[4] and mosaic_pattern[0] == mosaic_pattern[5]:
