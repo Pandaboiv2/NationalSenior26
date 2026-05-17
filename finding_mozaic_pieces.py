@@ -78,10 +78,10 @@ def move_to_tiles(color : int):
 
 def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, yellow_tiles : list, blue_tiles : list, green_tiles : list, white_tiles : list) -> None:
     array_of_colors = {
-        1: WRO2026.yellow_tiles,
-        2: WRO2026.blue_tiles,
-        3: WRO2026.green_tiles,
-        4: WRO2026.white_tiles,
+        1: wro2026.yellow_tiles,
+        2: wro2026.blue_tiles,
+        3: wro2026.green_tiles,
+        4: wro2026.white_tiles,
     }
     if mosaic_pattern[0] == mosaic_pattern[1] and mosaic_pattern[4] == mosaic_pattern[5] and mosaic_pattern[0] == mosaic_pattern[4]:
         move_to_tiles(mosaic_pattern[0])
@@ -98,10 +98,10 @@ def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, yellow_ti
         grab_tiles(array_of_colors[mosaic_pattern[0]], 2, 0)
         #move to the correct color place
         grab_tiles(array_of_colors[mosaic_pattern[1]], 2, 0)
-        WRO2026.grabbed_tiles[0] = 1
-        WRO2026.grabbed_tiles[1] = 1
-        WRO2026.grabbed_tiles[2] = 1
-        WRO2026.grabbed_tiles[3] = 1
+        wro2026.grabbed_tiles[0] = 1
+        wro2026.grabbed_tiles[1] = 1
+        wro2026.grabbed_tiles[2] = 1
+        wro2026.grabbed_tiles[3] = 1
     elif mosaic_pattern[1] == mosaic_pattern[4] and mosaic_pattern[0] == mosaic_pattern[5]:
         #this is a criss cross thingy
         pass
