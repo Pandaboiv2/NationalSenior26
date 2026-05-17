@@ -187,8 +187,7 @@ def tool():
     print(mosaic_pattern)
     '''
 
-    mosaic_pattern = [1, 1, 1, 1, 2, 1, 2, 3, 4, 2, 1, 1]
-
+    mosaic_pattern = [1, 1, 4, 3, 1, 1, 2, 3, 4, 2, 1, 1]
 
     pid_line_follower(follow_sensor_port=Port.S4,
                     stop_sensor_port=Port.S1,

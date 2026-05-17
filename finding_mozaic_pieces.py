@@ -49,8 +49,10 @@ def grab_tiles(target_matrix : list, target_row : int, dir : int) -> list:
     #code that makes you go back to the original position (the one you were at before you moved to the tiles)
 
     move_motors(-300, 300, rotations=0.45 + target_row * 0.25)
-    motor_a.run_time(750, 600)
-    motor_d.run_time(-500, 300)
+    motor_a.run_time(600, 500)
+    motor_d.run(-500)
+    wait(500)
+    motor_a.run_angle(-500, 150)
     move_motors(300, -300, rotations=0.45 + target_row * 0.25)
     return target_matrix
 
@@ -60,7 +62,7 @@ def move_to_tiles(color : int):
     while black_line_counter < color:
         pid_line_follower(follow_sensor_port=Port.S4,
                 stop_sensor_port=Port.S1,
-                base_speed=250,
+                base_speed=400,
                 Kp=2, Kd=3, Ki=0,
                 target=48,
                 max_angle=None,
