@@ -54,9 +54,12 @@ def grab_tiles(target_matrix : list, target_row : int, dir : int) -> None:
     for example:
     move forwards by 100 (base distance) + target_row * 20 (intervals between each tile) cm
     """
-    move_motors(-500, 500, rotations=0.3 + target_row * 0.2)
+    move_motors(-300, 300, rotations=0.6 + target_row * 0.25)
     #Code that lowers the lifter
     #Code that grabs the tile
+
+def move_to_tiles(color : int):
+    move_motors(-300, 300, rotations=1.05 + 0.9 * (color-1))
 
 def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, yellow_tiles : list, blue_tiles : list, green_tiles : list, white_tiles : list) -> None:
     array_of_colors = {
@@ -66,7 +69,9 @@ def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, yellow_ti
         4: white_tiles,
     }
     if mosaic_pattern[0] == mosaic_pattern[1] and mosaic_pattern[4] == mosaic_pattern[5] and mosaic_pattern[0] == mosaic_pattern[4]:
-        #move to the correct color place
+        move_to_tiles(mosaic_pattern[0])
+        move_motors(300, 300, rotations=0.76)
+        wait(1000)
         grab_tiles(array_of_colors[mosaic_pattern[0]], 1, 0)
         grab_tiles(array_of_colors[mosaic_pattern[0]], 2, 0)
         grabbed_tiles[0] = 1
