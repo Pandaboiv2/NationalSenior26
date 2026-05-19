@@ -5,7 +5,6 @@ from line_follower import pid_line_follower
 from config import ev3, left_motor, right_motor, motor_a, motor_d, colorsensorLeft, colorsensorRight
 from outil import move_motors
 
-
 def grab_tiles(target_matrix : list, target_row : int, dir : int, facing : int = 1) -> list:
     if abs(dir) > 0:
         if target_matrix[target_row][max(0, dir)]:
@@ -22,14 +21,20 @@ def grab_tiles(target_matrix : list, target_row : int, dir : int, facing : int =
             target_matrix[target_row][1] = False
         else:
             print("ERROR")
-
+    
+    motor_d.run_time(600, 500)
     move_motors(-300*facing, 300*facing, rotations=0.6 + target_row * 0.35)
+    wait(100)
     motor_a.run_time(600, 500)
     motor_d.run(-400)
     wait(500)
     motor_a.run_time(-500, 200)
     move_motors(300*facing, -300*facing, rotations=0.6 + target_row * 0.35)
+    move_motors(-300*facing, -300*facing, rotations=0.74)
+    if dir == 1:
+        move_motors(-300, 300, rotations=0.3)
     return target_matrix
+
 
 def move_to_tiles(color : int):
     black_line_counter = 0
@@ -37,7 +42,7 @@ def move_to_tiles(color : int):
     while black_line_counter < color:
         pid_line_follower(follow_sensor_port=Port.S4,
                 stop_sensor_port=Port.S1,
-                base_speed=400,
+                base_speed=300,
                 Kp=2, Kd=3, Ki=0,
                 target=48,
                 max_angle=None,
@@ -48,7 +53,7 @@ def move_to_tiles(color : int):
         black_line_counter += 1
         print(black_line_counter)
         ev3.speaker.beep()
-        move_motors(-300, 300, rotations=0.25)
+        move_motors(-300, 300, rotations=0.18)
 
     left_motor.hold()
     right_motor.hold()
@@ -68,6 +73,7 @@ def go_to_some_tiles(target_color : int, starting_color : int) -> None:
                 stop_threshold=22,
                 side="l",
                 stop_count=int(get_distance / 0.5))
+        move_motors(-300, 300, rotations=0.18)
     else:
         move_motors(300, 300, rotations=1.52)
         pid_line_follower(follow_sensor_port=Port.S1,
@@ -80,6 +86,7 @@ def go_to_some_tiles(target_color : int, starting_color : int) -> None:
                 stop_threshold=22,
                 side="r",
                 stop_count=int(abs(get_distance) / 0.5))
+        move_motors(-300, 300, rotations=0.18)
         move_motors(300, 300, rotations=1.52)
 
 def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, color_arrays : list):
@@ -138,9 +145,8 @@ def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, color_arr
 
         # Trip 1 — grab back slot of first color
         move_to_tiles(first_color)
-        move_motors(300, 300, rotations=0.74)
+        move_motors(300, 300, rotations=0.75)
         color_arrays[first_color - 1] = grab_tiles(color_arrays[first_color - 1], 0, first_dir)
-        move_motors(-300, -300, rotations=0.74)
         if first_dir == -1:
             grabbed_tiles[2] = first_color
         else:
@@ -148,13 +154,11 @@ def grab_first_four_tiles(mosaic_pattern : list, grabbed_tiles : list, color_arr
 
         # Trip 2 — grab both second color slots
         go_to_some_tiles(second_color, first_color)
-        move_motors(300, 300, rotations=0.74)
+        move_motors(300, 300, rotations=0.75)
         color_arrays[second_color - 1] = grab_tiles(color_arrays[second_color - 1], 0, second_dir)
-        move_motors(-300, -300, rotations=0.72)
         move_motors(-300*second_dir, 300*second_dir, rotations=0.35)
         move_motors(300, 300, rotations=0.72)
         color_arrays[second_color - 1] = grab_tiles(color_arrays[second_color - 1], 0, -second_dir)
-        move_motors(-300, -300, rotations=0.74)
         if second_dir == -1:
             grabbed_tiles[3] = second_color
             grabbed_tiles[0] = second_color
