@@ -1,10 +1,13 @@
 #!/usr/bin/env pybricks-micropython
-from pybricks.parameters import Port, Stop
+from pybricks.parameters import Port, Stop, Direction
 from pybricks.tools import wait, StopWatch
 from line_follower import pid_line_follower
 from config import ev3, left_motor, right_motor, motor_a, motor_d, colorsensorLeft, colorsensorRight
 from scanning import scan_mosaic
+import math
 
+WHEEL_DIAMETER = 56
+AXLE_TRACK     = 120
 mosaic_pattern = []
 
 def move_motors(left_speed, right_speed, duration_ms=None, rotations=None, degrees=None) -> None:
@@ -29,6 +32,41 @@ def move_motors(left_speed, right_speed, duration_ms=None, rotations=None, degre
         left_motor.stop(Stop.BRAKE)
         right_motor.stop(Stop.BRAKE)
         return
+
+
+def calc_motor_deg(turn_angle):
+    arc = math.pi * AXLE_TRACK * (turn_angle / 360)
+    return (arc / (math.pi * WHEEL_DIAMETER)) * 360
+
+def turn_motors(turn_angle, speed=50, kp=1.8, kd=0.8):
+    motor_target = calc_motor_deg(turn_angle)
+
+    left_motor.reset_angle(0)
+    right_motor.reset_angle(0)
+
+    last_error = motor_target
+
+    while True:
+        pos = (left_motor.angle() + right_motor.angle()) / 2  # + instead of -
+        error = motor_target - pos
+        derivative = error - last_error
+
+        correction = kp * error + kd * derivative
+        correction = max(-speed, min(speed, correction))
+
+        left_motor.dc(correction)
+        right_motor.dc(correction)  # same sign, no COUNTERCLOCKWISE needed
+
+        last_error = error
+
+        if abs(error) < 10:
+            break
+
+        wait(10)
+
+    left_motor.brake()
+    right_motor.brake()
+    wait(300)
 
 def tool():
     '''
@@ -187,7 +225,7 @@ def tool():
     print(mosaic_pattern)
     '''
 
-    mosaic_pattern = [3, 1, 4, 3, 1, 3, 2, 3, 4, 2, 1, 1]
+    mosaic_pattern = [1, 3, 3, 4, 3, 1, 2, 3, 4, 2, 1, 1]
 
     pid_line_follower(follow_sensor_port=Port.S4,
                     stop_sensor_port=Port.S1,
@@ -203,10 +241,7 @@ def tool():
 
     move_motors(-300, 300, rotations=0.1)
 
-    move_motors(300, 300, rotations=0.76)
-    wait(250)
-
-    motor_a.run_time(-750, 500)
+    turn_motors(132)
     wait(250)
     # will go place the trowel #
     #--------------------------#
