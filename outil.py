@@ -4,10 +4,8 @@ from pybricks.tools import wait, StopWatch
 from line_follower import pid_line_follower
 from config import ev3, left_motor, right_motor, motor_a, motor_d, colorsensorLeft, colorsensorRight
 from scanning import scan_mosaic
-import math
 
-WHEEL_DIAMETER = 56
-AXLE_TRACK     = 120
+
 mosaic_pattern = []
 
 def move_motors(left_speed, right_speed, duration_ms=None, rotations=None, degrees=None) -> None:
@@ -34,39 +32,6 @@ def move_motors(left_speed, right_speed, duration_ms=None, rotations=None, degre
         return
 
 
-def calc_motor_deg(turn_angle):
-    arc = math.pi * AXLE_TRACK * (turn_angle / 360)
-    return (arc / (math.pi * WHEEL_DIAMETER)) * 360
-
-def turn_motors(turn_angle, speed=50, kp=1.8, kd=0.8):
-    motor_target = calc_motor_deg(turn_angle)
-
-    left_motor.reset_angle(0)
-    right_motor.reset_angle(0)
-
-    last_error = motor_target
-
-    while True:
-        pos = (left_motor.angle() + right_motor.angle()) / 2  # + instead of -
-        error = motor_target - pos
-        derivative = error - last_error
-
-        correction = kp * error + kd * derivative
-        correction = max(-speed, min(speed, correction))
-
-        left_motor.dc(correction)
-        right_motor.dc(correction)  # same sign, no COUNTERCLOCKWISE needed
-
-        last_error = error
-
-        if abs(error) < 10:
-            break
-
-        wait(10)
-
-    left_motor.brake()
-    right_motor.brake()
-    wait(300)
 
 def tool():
     '''
@@ -107,7 +72,8 @@ def tool():
     move_motors(-500, 500, rotations=0.2)
     wait(100)
 
-    move_motors(-500, -500, rotations=0.76)
+    turn_motors(132, speed=45)
+    #move_motors(-500, -500, rotations=0.76)
     wait(100)
 
     move_motors(500, -500, rotations=0.67)
@@ -116,7 +82,8 @@ def tool():
     mosaic_pattern = scan_mosaic()
     print(mosaic_pattern)
 
-    move_motors(-750, -750, rotations=1.52)
+    turn_motors(132, speed=45)
+    #move_motors(-750, -750, rotations=1.52)
     wait(100)
 
     move_motors(500, -500, rotations=0.82)
@@ -130,7 +97,7 @@ def tool():
 
     #----------------#
     # put the rectangle thing #
-    move_motors(-500, -500, rotations=0.68)
+    #move_motors(-500, -500, rotations=0.68)
     wait(100)
 
     move_motors(500, -500, rotations=2)
@@ -175,7 +142,8 @@ def tool():
 
     move_motors(500, -500, rotations=0.3)
 
-    move_motors(-500, -500, rotations=0.72)
+    turn_motors(132, speed=40)
+    #move_motors(-500, -500, rotations=0.72)
     wait(100)
 
     wait(100)
@@ -194,7 +162,8 @@ def tool():
     move_motors(-350, 350, rotations=0.5)
     wait(100)
 
-    move_motors(500, 500, rotations=0.7)
+    turn_motors(-128, speed=45)
+    #move_motors(500, 500, rotations=0.7)
     wait(100)
 
     move_motors(500, -500, rotations=0.5)
@@ -220,12 +189,8 @@ def tool():
     wait(100)
     '''
 
-    '''
-    mosaic_pattern = scan_mosaic()
-    print(mosaic_pattern)
-    '''
-
-    mosaic_pattern = [1, 3, 3, 4, 3, 1, 2, 3, 4, 2, 1, 1]
+    #remove this line before running 
+    mosaic_pattern = [1, 1, 2, 3, 1, 1, 2, 3, 4, 2, 1, 1]
 
     pid_line_follower(follow_sensor_port=Port.S4,
                     stop_sensor_port=Port.S1,
@@ -239,9 +204,9 @@ def tool():
     
     wait(100)
 
-    move_motors(-300, 300, rotations=0.1)
+    move_motors(-300, 300, rotations=0.08)
 
-    turn_motors(132)
+    move_motors(300, 300, rotations=0.74)
     wait(250)
     # will go place the trowel #
     #--------------------------#
