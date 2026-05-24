@@ -31,7 +31,7 @@ def move_motors(left_speed, right_speed, duration_ms=None, rotations=None, degre
         return
 
 def tool():
-    '''
+    #'''
     #--------------------------------#
     # will go scan and take the bowl #
     right_motor.run_angle(500, 90)
@@ -180,16 +180,16 @@ def tool():
 
     motor_a.run_time(1000, 750)
     wait(100)
-    '''
-
     #'''
+
+    '''
     #remove this line before running 
     mosaic_pattern = [
-        1, 1, 2, 3,
-        1, 1, 2, 3,
-        2, 3, 1, 2
+        4, 3, 4, 3,
+        2, 1, 2, 3,
+        4, 2, 1, 1
     ]
-    #'''
+    '''
 
     pid_line_follower(follow_sensor_port=Port.S4,
                     stop_sensor_port=Port.S1,

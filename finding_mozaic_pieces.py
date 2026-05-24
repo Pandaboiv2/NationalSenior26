@@ -149,66 +149,70 @@ def grab_vertical(mosaic_pattern: list, grabbed_tiles: list, color_arrays: list)
         print("before left grab:", grabbed_tiles)
         color_arrays[left_color - 1] = grab_tiles(color_arrays[left_color - 1], 1, -1, grabbed_tiles)
 
-    return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3]
-
 def grab_else(mosaic_pattern: list, grabbed_tiles: list, color_arrays: list):
-    # all 4 different or mixed. back first with closest color 
-    back_left = mosaic_pattern[0]   # index 0
-    back_right = mosaic_pattern[4]  # index 4
-    front_left = mosaic_pattern[1]  # index 1
-    front_right = mosaic_pattern[5] # index 5
+    back_left = mosaic_pattern[0]
+    back_right = mosaic_pattern[4]
+    front_left = mosaic_pattern[1]
+    front_right = mosaic_pattern[5]
 
-    # back slots first, closest to start position
     back_first = min(back_left, back_right, key=lambda c: c)
     back_second = max(back_left, back_right, key=lambda c: c)
 
     # grab first back
     move_to_tiles(back_first)
     if back_first == back_left:
-        grabbed_tiles[2] = back_first
         dir1 = -1
     else:
-        grabbed_tiles[3] = back_first
         dir1 = 1
-    print("before back first grab:", grabbed_tiles)
     color_arrays[back_first - 1] = grab_tiles(color_arrays[back_first - 1], 0, dir1, grabbed_tiles)
+    if dir1 == -1:  # CHANGED: update after grab
+        grabbed_tiles[2] = back_first
+    else:
+        grabbed_tiles[3] = back_first
+    print("after back first grab:", grabbed_tiles)
 
     # grab second back
     go_to_some_tiles(back_second, back_first)
     if back_second == back_left:
-        grabbed_tiles[2] = back_second
         dir2 = -1
     else:
-        grabbed_tiles[3] = back_second
         dir2 = 1
-    print("before back second grab:", grabbed_tiles)
     color_arrays[back_second - 1] = grab_tiles(color_arrays[back_second - 1], 0, dir2, grabbed_tiles)
+    if dir2 == -1:  # CHANGED: update after grab
+        grabbed_tiles[2] = back_second
+    else:
+        grabbed_tiles[3] = back_second
+    print("after back second grab:", grabbed_tiles)
 
-    # now front slots, closest from current position (back_second)
+    # front slots, closest from current position (back_second)
     front_first = min(front_left, front_right, key=lambda c: abs(c - back_second))
     front_second = front_left if front_first == front_right else front_right
 
     go_to_some_tiles(front_first, back_second)
     if front_first == front_left:
-        grabbed_tiles[0] = front_first
         dir3 = -1
     else:
-        grabbed_tiles[1] = front_first
         dir3 = 1
-    print("before front first grab:", grabbed_tiles)
     color_arrays[front_first - 1] = grab_tiles(color_arrays[front_first - 1], 0, dir3, grabbed_tiles)
+    if dir3 == -1:  # CHANGED: update after grab
+        grabbed_tiles[1] = front_first
+    else:
+        grabbed_tiles[0] = front_first
+    print("after front first grab:", grabbed_tiles)
 
     go_to_some_tiles(front_second, front_first)
     if front_second == front_left:
-        grabbed_tiles[0] = front_second
         dir4 = -1
     else:
-        grabbed_tiles[1] = front_second
         dir4 = 1
-    print("before front second grab:", grabbed_tiles)
     color_arrays[front_second - 1] = grab_tiles(color_arrays[front_second - 1], 0, dir4, grabbed_tiles)
+    if dir4 == -1:  # CHANGED: update after grab
+        grabbed_tiles[1] = front_second
+    else:
+        grabbed_tiles[0] = front_second
+    print("after front second grab:", grabbed_tiles)
 
-    return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3]
+    return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3], front_second  # CHANGED: return front_second
 
 def grab_first_four_tiles(mosaic_pattern: list, grabbed_tiles: list, color_arrays: list):
     if mosaic_pattern[0] == mosaic_pattern[1] and mosaic_pattern[4] == mosaic_pattern[5] and mosaic_pattern[0] == mosaic_pattern[4]:
@@ -277,9 +281,8 @@ def grab_first_four_tiles(mosaic_pattern: list, grabbed_tiles: list, color_array
 
     else:
         #all different or mixed use grab_else
-        grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3] = grab_else(mosaic_pattern, grabbed_tiles, color_arrays)
-        go_to_center(front_second)
-        
+        grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3], last_color = grab_else(mosaic_pattern, grabbed_tiles, color_arrays)
+        go_to_center(last_color)
 
     return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3]
 
@@ -327,7 +330,7 @@ def go_to_center(starting_color) -> None:
     move_motors(-300, 300, rotations=0.85)
     wait(250)
 
-    motor_a.run_time(500, 300)
+    motor_a.run_time(550, 400)
     wait(100)
     
     motor_d.run_time(750, 650)

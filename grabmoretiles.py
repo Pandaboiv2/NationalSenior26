@@ -30,7 +30,7 @@ def grab_second_four_tiles(mosaic_pattern: list, color_arrays: list):
         0, 0,
         0, 0,
     ]
-    move_motors(300, -300, rotations=0.2)
+    move_motors(300, -300, rotations=0.8)
     move_motors(300, 300, rotations=1.48)
     pid_line_follower(follow_sensor_port=Port.S1,
                 stop_sensor_port=Port.S4,
