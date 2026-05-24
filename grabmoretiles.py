@@ -45,8 +45,8 @@ def grab_second_four_tiles(mosaic_pattern: list, color_arrays: list):
 
     move_motors(-300, 300, rotations=0.2)
     move_motors(-300, -300, rotations=0.76)
-    grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3] = grabLeft2Tiles(mosaic_pattern, grabbed_tiles, color_arrays)
     grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3] = grabRight2Tiles(mosaic_pattern, grabbed_tiles, color_arrays)
+    grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3] = grabLeft2Tiles(mosaic_pattern, grabbed_tiles, color_arrays)
     
 
 def grabLeft2Tiles(mosaic_pattern: list, grabbed_tiles: list, color_arrays: list):
@@ -61,7 +61,16 @@ def grabLeft2Tiles(mosaic_pattern: list, grabbed_tiles: list, color_arrays: list
     return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3]
 
 def grabRight2Tiles(mosaic_pattern: list, grabbed_tiles: list, color_arrays: list):
-
+    if mosaic_pattern[10] == mosaic_pattern[11]:
+        MoveToColor(mosaic_pattern[10], 2.5)
+        grabbed_tiles, color_arrays = grab_similar(grabbed_tiles, mosaic_pattern[10], color_arrays)
+        grabbed_tiles[2] = mosaic_pattern[10]
+        grabbed_tiles[3] = mosaic_pattern[10]
+        MoveToColor(2.5, mosaic_pattern[10])
+    else:
+        MoveToColor(min(mosaic_pattern[10], mosaic_pattern[11]), 2.5)
+        grabbed_tiles, color_arrays = grab_else(grabbed_tiles, mosaic_pattern[10], mosaic_pattern[11], color_arrays, first=False)
+        MoveToColor(2.5, max(mosaic_pattern[10], mosaic_pattern[11]))
     return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3]
 
 def grab_similar(grabbed_tiles: list, color_index: int, color_arrays):
@@ -107,6 +116,13 @@ def grab_else(GrabbedTiles, LeftColor, RightColor, ColorArrays, first : bool = T
         else:
             GrabbedTiles[1] = secondcolor
             GrabbedTiles[0] = firstcolor
+    else:
+        if firstdir == 1:
+            GrabbedTiles[2] = secondcolor
+            GrabbedTiles[3] = firstcolor
+        else:
+            GrabbedTiles[3] = secondcolor
+            GrabbedTiles[2] = firstcolor
     return GrabbedTiles, ColorArrays
 
 def MoveToColor(target_color: int, starting_color: int) -> None:
