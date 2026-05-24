@@ -27,5 +27,7 @@ pid_line_follower(follow_sensor_port=Port.S4,
                 stop_mode="c",
                 stop_threshold=22,
                 side="l",)
-move_motors(-300, 300, rotations=0.25)
-grab_tiles(test_matrix, 0, 1)  # grab row 1, left side
+move_motors(-300, 300, rotations=0.24)
+wait(100)
+grabbed_tiles = [0, 0, 0, 0]
+grab_tiles(test_matrix, 0, -1, grabbed_tiles)  # grab row 1, left side
