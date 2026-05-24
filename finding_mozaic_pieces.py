@@ -32,7 +32,7 @@ def grab_tiles(target_matrix: list, target_row: int, dir: int, grabbed_tiles: li
     wait(100)
     motor_a.run_time(300, 600)
     motor_d.run(-750)
-    wait(500)
+    wait(600)
     motor_a.run_time(-500, 300)
     move_motors(300*facing, -300*facing, rotations=0.56 + target_row * 0.35)
     move_motors(-300*facing, -300*facing, rotations=0.74)
@@ -158,7 +158,7 @@ def grab_vertical(mosaic_pattern: list, grabbed_tiles: list, color_arrays: list)
 
 
 def grab_else(mosaic_pattern: list, grabbed_tiles: list, color_arrays: list):
-    # all 4 different or mixed — back first, then closest next
+    # all 4 different or mixed. back first with closest color 
     back_left = mosaic_pattern[0]   # index 0
     back_right = mosaic_pattern[4]  # index 4
     front_left = mosaic_pattern[1]  # index 1
@@ -289,14 +289,16 @@ def grab_first_four_tiles(mosaic_pattern: list, grabbed_tiles: list, color_array
     return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3]
 
 
-
-
 def go_to_center(starting_color) -> None:
     get_distance = 0.5 * (2.5 - starting_color)
     if starting_color == 1:
         get_distance += 0.8
     elif starting_color == 2:
         get_distance += 0.3
+    elif starting_color == 3:
+        get_distance += -0.2
+    elif starting_color == 4:
+        get_distance += -0.45
     move_motors(-350, 350, rotations=get_distance)
     wait(100)
     move_motors(-300, -300, rotations=0.76)
@@ -315,14 +317,36 @@ def go_to_center(starting_color) -> None:
                 side="l",)
     wait(250)
 
-    move_motors(-300, 300, rotations=0.8)
-    wait(500)
+    left_motor.run_angle(-300, 65)
+    wait(100)
+    right_motor.run_angle(300, 65)
+    wait(100)
+
+    move_motors(-300, 300, rotations=0.9)
+    wait(250)
 
     motor_a.run_time(500, 300)
     wait(100)
-
+    
     motor_d.run_time(750, 650)
     wait(100)
+
+    #move_motors(-300, -300, rotations=0.07)
+    #wait(100)
+    #move_motors(300, 300, rotations=0.05)
+
+    motor_a.run_time(-500, 300)
+    wait(100)
+    motor_a.run_time(750, 300)
+    wait(100)
+    motor_a.run_time(-500, 300)
+    wait(100)
+
+    move_motors(300, -300, rotations=0.2)
+
+    motor_a.run_time(750, 300)
+    wait(100)
+
 
 
 

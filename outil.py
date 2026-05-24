@@ -191,8 +191,8 @@ def tool():
 
     #remove this line before running 
     mosaic_pattern = [
-        1, 1, 2, 3,
-        1, 1, 2, 3,
+        3, 3, 2, 3,
+        3, 3, 2, 3,
         4, 2, 1, 1
     ]
 
