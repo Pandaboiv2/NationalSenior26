@@ -5,7 +5,6 @@ from line_follower import pid_line_follower
 from config import ev3, left_motor, right_motor, motor_a, motor_d, colorsensorLeft, colorsensorRight
 from scanning import scan_mosaic
 
-
 mosaic_pattern = []
 
 def move_motors(left_speed, right_speed, duration_ms=None, rotations=None, degrees=None) -> None:
@@ -30,8 +29,6 @@ def move_motors(left_speed, right_speed, duration_ms=None, rotations=None, degre
         left_motor.stop(Stop.BRAKE)
         right_motor.stop(Stop.BRAKE)
         return
-
-
 
 def tool():
     '''
@@ -72,8 +69,7 @@ def tool():
     move_motors(-500, 500, rotations=0.2)
     wait(100)
 
-    turn_motors(132, speed=45)
-    #move_motors(-500, -500, rotations=0.76)
+    move_motors(-500, -500, rotations=0.76)
     wait(100)
 
     move_motors(500, -500, rotations=0.67)
@@ -81,9 +77,8 @@ def tool():
 
     mosaic_pattern = scan_mosaic()
     print(mosaic_pattern)
-
-    turn_motors(132, speed=45)
-    #move_motors(-750, -750, rotations=1.52)
+    
+    move_motors(-750, -750, rotations=1.52)
     wait(100)
 
     move_motors(500, -500, rotations=0.82)
@@ -97,7 +92,7 @@ def tool():
 
     #----------------#
     # put the rectangle thing #
-    #move_motors(-500, -500, rotations=0.68)
+    move_motors(-500, -500, rotations=0.68)
     wait(100)
 
     move_motors(500, -500, rotations=2)
@@ -141,9 +136,8 @@ def tool():
     wait(250)
 
     move_motors(500, -500, rotations=0.3)
-
-    turn_motors(132, speed=40)
-    #move_motors(-500, -500, rotations=0.72)
+    
+    move_motors(-500, -500, rotations=0.72)
     wait(100)
 
     wait(100)
@@ -162,8 +156,7 @@ def tool():
     move_motors(-350, 350, rotations=0.5)
     wait(100)
 
-    turn_motors(-128, speed=45)
-    #move_motors(500, 500, rotations=0.7)
+    move_motors(500, 500, rotations=0.7)
     wait(100)
 
     move_motors(500, -500, rotations=0.5)
@@ -189,12 +182,14 @@ def tool():
     wait(100)
     '''
 
+    #'''
     #remove this line before running 
     mosaic_pattern = [
-        3, 3, 2, 3,
-        3, 3, 2, 3,
+        3, 4, 2, 3,
+        4, 3, 2, 3,
         4, 2, 1, 1
     ]
+    #'''
 
     pid_line_follower(follow_sensor_port=Port.S4,
                     stop_sensor_port=Port.S1,
