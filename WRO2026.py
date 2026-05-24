@@ -6,6 +6,7 @@ from pybricks.tools import wait, StopWatch
 from line_follower import pid_line_follower
 from outil import tool
 from finding_mozaic_pieces import grab_first_four_tiles
+from grabmoretiles import grab_second_four_tiles
 
 ev3 = EV3Brick()
 
@@ -40,3 +41,4 @@ grabbed_tiles = [
 
 mosaic_pattern = tool()
 grabbed_tiles, yellow_tiles, blue_tiles, green_tiles, white_tiles = grab_first_four_tiles(mosaic_pattern, grabbed_tiles, [yellow_tiles, blue_tiles, green_tiles, white_tiles])
+grabbed_tiles, yellow_tiles, blue_tiles, green_tiles, white_tiles = grab_second_four_tiles(mosaic_pattern, [yellow_tiles, blue_tiles, green_tiles, white_tiles])

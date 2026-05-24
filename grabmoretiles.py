@@ -1,4 +1,5 @@
-from pybricks.parameters import Port, Stop
+#!/usr/bin/env pybricks-micropython
+from pybricks.parameters import Port, Stop, Direction
 from pybricks.tools import wait, StopWatch
 from line_follower import pid_line_follower
 from config import ev3, left_motor, right_motor, motor_a, motor_d, colorsensorLeft, colorsensorRight
@@ -29,9 +30,21 @@ def grab_second_four_tiles(mosaic_pattern: list, color_arrays: list):
         0, 0,
         0, 0,
     ]
+    move_motors(300, -300, rotations=0.2)
     move_motors(300, 300, rotations=1.48)
-    #Follow The Line until it reaches the center
-    #turn 90 degrees clockwise
+    pid_line_follower(follow_sensor_port=Port.S1,
+                stop_sensor_port=Port.S4,
+                base_speed=300,
+                Kp=3, Kd=4, Ki=0,
+                target=48,
+                max_angle=None,
+                stop_mode="c",
+                stop_threshold=22,
+                side="r",)
+    wait(250)
+
+    move_motors(-300, 300, rotations=0.2)
+    move_motors(-300, -300, rotations=0.76)
     grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3] = grabLeft2Tiles(mosaic_pattern, grabbed_tiles, color_arrays)
     grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3] = grabRight2Tiles(mosaic_pattern, grabbed_tiles, color_arrays)
     
@@ -65,7 +78,7 @@ def grab_similar(grabbed_tiles: list, color_index: int, color_arrays):
             color_arrays[color_index - 1] = grab_tiles(color_arrays[color_index - 1], right, 1, grabbed_tiles)
     return grabbed_tiles, color_arrays
 
-def grab_else(GrabbedTiles, LeftColor, RightColor, ColorArrays, first : bool = true):
+def grab_else(GrabbedTiles, LeftColor, RightColor, ColorArrays, first : bool = True):
     left = GetClosestAvailableTiles(ColorArrays[LeftColor - 1], -1)
     right = GetClosestAvailableTiles(ColorArrays[RightColor - 1], 1)
     firstcolor = min(LeftColor, RightColor)
