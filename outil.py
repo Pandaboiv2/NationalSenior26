@@ -3,7 +3,7 @@ from pybricks.parameters import Port, Stop, Direction
 from pybricks.tools import wait, StopWatch
 from line_follower import pid_line_follower
 from config import ev3, left_motor, right_motor, motor_a, motor_d, colorsensorLeft, colorsensorRight
-from scanning import scan_mosaic
+from scanning import scan_mosaic, calibrate
 
 mosaic_pattern = []
 
@@ -31,9 +31,11 @@ def move_motors(left_speed, right_speed, duration_ms=None, rotations=None, degre
         return
 
 def tool():
+    global mosaic_pattern 
     #'''
     #--------------------------------#
     # will go scan and take the bowl #
+    '''
     right_motor.run_angle(500, 90)
     wait(100)
 
@@ -69,11 +71,14 @@ def tool():
     move_motors(-500, 500, rotations=0.2)
     wait(100)
 
-    move_motors(-500, -500, rotations=0.76)
+    move_motors(-500, -500, rotations=0.74)
     wait(100)
 
     move_motors(500, -500, rotations=0.67)
     wait(100)
+
+    #calibrate()
+    #wait(50000)
 
     mosaic_pattern = scan_mosaic()
     print(mosaic_pattern)
@@ -105,7 +110,7 @@ def tool():
     right_motor.run_angle(500, 180)
     wait(100)
 
-    move_motors(-500, 500, rotations=0.4)
+    move_motors(-500, 500, rotations=0.43)
     wait(100)
 
     left_motor.run_angle(-500, 210)
@@ -122,6 +127,7 @@ def tool():
                     side="r",)
 
     wait(100)
+    '''
     
     pid_line_follower(follow_sensor_port=Port.S1,
                     stop_sensor_port=Port.S4,
@@ -142,13 +148,107 @@ def tool():
 
     wait(100)
 
-    motor_a.run_time(1200, 1000)
+    motor_a.run_time(2000, 1000)
     wait(100)
 
     wait(100)
 
     # will go place the bowl #
     #------------------------#
+
+    #---------------------------#
+    #will go do the white things#
+
+    move_motors(300, 300, rotations=0.72)
+    wait(100)
+
+    left_motor.run_angle(-400, 230)
+    wait(100)
+
+    right_motor.run_angle(400, 210)
+    wait(100)
+
+    pid_line_follower(follow_sensor_port=Port.S4,
+                stop_sensor_port=Port.S1,
+                base_speed=300,
+                Kp=3, Kd=4, Ki=0,
+                target=48,
+                max_angle=None,
+                stop_mode="c",
+                stop_threshold=22,
+                side="r",)
+    wait(150)
+
+    move_motors(350, -350, rotations=0.4)
+    wait(100)
+
+    move_motors(350, 350, rotations=1.52)
+    wait(100)
+
+    move_motors(350, -350, rotations=0.55)
+    wait(100)
+
+    motor_a.run_time(-750, 600)
+    wait(100)
+
+    move_motors(300, 300, rotations=0.2)
+    wait(100)
+
+    move_motors(-300, -300, rotations=0.62)
+    wait(150)
+
+    move_motors(-500, 500, rotations=3)
+    wait(100)
+
+    while colorsensorLeft.reflection() > 22:
+        left_motor.run(-300)
+        right_motor.run(300)
+
+    left_motor.stop(Stop.BRAKE)
+    right_motor.stop(Stop.BRAKE)
+    wait(150)
+
+    move_motors(-300, 300, rotations=0.15)
+    wait(100)
+
+    move_motors(300, 300, rotations=0.4)
+    wait(100)
+
+    pid_line_follower(follow_sensor_port=Port.S4,
+            stop_sensor_port=Port.S1,
+            base_speed=300,
+            Kp=3, Kd=4, Ki=0,
+            target=48,
+            max_angle=None,
+            stop_mode="c",
+            stop_threshold=22,
+            side="r",)
+    wait(250)
+
+    move_motors(350, -350, rotations=0.6)
+    wait(100)
+
+    move_motors(300, 300, rotations=1.52)
+    wait(100)
+
+    move_motors(350, -350, rotations=0.5)
+    wait(100)
+
+    move_motors(-300, -300, rotations=0.35)
+    wait(100)
+
+    motor_a.run_time(1000, 750)
+    wait(100)
+
+    move_motors(350, -350, rotations=0.8)
+    wait(100)
+
+    move_motors(-350, 350, rotations=0.8)
+    wait(100)
+
+    wait(60000)
+    #will go do the white things#
+    #---------------------------#
 
     #--------------------------#
     # will go place the trowel #
