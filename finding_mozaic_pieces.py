@@ -6,22 +6,17 @@ from config import ev3, left_motor, right_motor, motor_a, motor_d, colorsensorLe
 from outil import move_motors
 
 def grab_tiles(target_matrix: list, target_row: int, dir: int, grabbed_tiles: list, facing: int = 1) -> list:
+    #dir (0 for both, -1 for left and 1 for right)
+    #facing is
     if abs(dir) > 0:
-        if target_matrix[target_row][max(0, dir)]:
-            target_matrix[target_row][max(0, dir)] = False
-            wait(1000)
-            move_motors(300*dir*facing, -300*dir*facing, rotations=0.33)
-            move_motors(300*facing, 300*facing, rotations=0.74)
-            target_matrix[target_row][max(0, dir)] = False
-        else:
-            print("ERROR")
+        target_matrix[target_row][max(0, dir)] = False
+        move_motors(300*dir*facing, -300*dir*facing, rotations=0.33)
+        move_motors(300*facing, 300*facing, rotations=0.74)
+        target_matrix[target_row][max(0, dir)] = False
     else:
-        if target_matrix[target_row][0] and target_matrix[target_row][1]:
-            target_matrix[target_row][0] = False
-            target_matrix[target_row][1] = False
-            move_motors(300*facing, 300*facing, rotations=0.745)
-        else:
-            print("ERROR")
+        target_matrix[target_row][0] = False
+        target_matrix[target_row][1] = False
+        move_motors(300, 300, rotations=0.745)
       
     motor_a.run_time(500, 300)
     motor_d.run_time(1000, 650)
@@ -29,18 +24,16 @@ def grab_tiles(target_matrix: list, target_row: int, dir: int, grabbed_tiles: li
         motor_a.run_time(-250, 200)
     else:
         motor_a.run_time(-750, 400)
-    move_motors(-300*facing, 300*facing, rotations=0.575 + target_row * 0.35)
-    wait(100)
+    move_motors(-300, 300, rotations=0.575 + target_row * 0.35)
+    wait(80)
     motor_a.run_time(300, 600)
     motor_d.run(-750)
     wait(600)
     motor_a.run_time(-300, 200)
-    move_motors(300*facing, -300*facing, rotations=0.56 + target_row * 0.35)
+    move_motors(300, -300, rotations=0.56 + target_row * 0.35)
     move_motors(-300*facing, -300*facing, rotations=0.74)
-    if dir == 1:
-        move_motors(-300, 300, rotations=0.25)
-    if dir == -1:
-        move_motors(300, -300, rotations=0.25)
+    if abs(dir) > 0:
+        move_motors(-300*dir, 300*dir, rotations=0.33)
     return target_matrix
 
 def move_to_tiles(color: int):
@@ -143,31 +136,29 @@ def grab_vertical(mosaic_pattern: list, grabbed_tiles: list, color_arrays: list)
     color_arrays[second_color - 1] = grab_tiles(color_arrays[second_color - 1], 0, second_dir, grabbed_tiles)  # CHANGED: target_row=1 to grab both rows at once
     if second_dir == -1:
         grabbed_tiles[2] = second_color  # back-left
-        grabbed_tiles[1] = second_color  # front-left
     else:
         grabbed_tiles[3] = second_color  # back-right
-        grabbed_tiles[0] = second_color  # front-right
     print("after trip 2:", grabbed_tiles)
 
     # Trip 3: front of second color
-    color_arrays[first_color - 1][0][max(second_dir, 0)] = True
+    print(color_arrays[first_color - 1])
     color_arrays[first_color - 1] = grab_tiles(color_arrays[second_color - 1], 0, 0, grabbed_tiles)
+    ev3.speaker.beep()
     if second_dir == -1:
-        grabbed_tiles[1] = second_color  # front-left
+        grabbed_tiles[0] = second_color  # front-left
     else:
-        grabbed_tiles[0] = second_color  # front-right
+        grabbed_tiles[1] = second_color  # front-right
     print("after trip 3:", grabbed_tiles)
 
 
     # Trip 4: front of first color
     go_to_some_tiles(first_color, second_color)
-    color_arrays[first_color - 1][0][max(first_dir, 0)] = True
     color_arrays[first_color - 1] = grab_tiles(color_arrays[first_color - 1], 0, 0, grabbed_tiles)
     if first_dir == -1:
-        grabbed_tiles[1] = first_color  # front-left
+        grabbed_tiles[0] = first_color  # front-left
     else:
-        grabbed_tiles[0] = first_color  # front-right
-    print("after trip 3:", grabbed_tiles)
+        grabbed_tiles[1] = first_color  # front-right
+    print("after trip 4:", grabbed_tiles)
 
     return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3], first_color
 
