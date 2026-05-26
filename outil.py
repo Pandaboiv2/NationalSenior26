@@ -32,10 +32,9 @@ def move_motors(left_speed, right_speed, duration_ms=None, rotations=None, degre
 
 def tool():
     global mosaic_pattern 
-    #'''
+    '''
     #--------------------------------#
     # will go scan and take the bowl #
-    '''
     right_motor.run_angle(500, 90)
     wait(100)
 
@@ -119,7 +118,7 @@ def tool():
     pid_line_follower(follow_sensor_port=Port.S1,
                     stop_sensor_port=Port.S4,
                     base_speed=750,
-                    Kp=2, Kd=3, Ki=0,
+                    Kp=4, Kd=4, Ki=0,
                     target=48,
                     max_angle=1300,
                     stop_mode="a",
@@ -127,7 +126,6 @@ def tool():
                     side="r",)
 
     wait(100)
-    '''
     
     pid_line_follower(follow_sensor_port=Port.S1,
                     stop_sensor_port=Port.S4,
@@ -146,19 +144,199 @@ def tool():
     move_motors(-500, -500, rotations=0.72)
     wait(100)
 
-    wait(100)
-
     motor_a.run_time(2000, 1000)
     wait(100)
 
+    move_motors(300, 300, rotations=0.73)
     wait(100)
 
     # will go place the bowl #
     #------------------------#
 
     #---------------------------#
-    #will go do the white things#
+    #will go do the green things#
 
+    right_motor.run_angle(400, 410)
+    wait(100)
+
+    move_motors(-550, 550, rotations=1.6)
+    wait(100)
+
+    while colorsensorLeft.reflection() > 22:
+        left_motor.run(-500)
+        right_motor.run(500)
+
+    left_motor.stop(Stop.BRAKE)
+    right_motor.stop(Stop.BRAKE)
+    wait(150)
+
+    move_motors(-350, 350, rotations=0.2)
+    wait(100)
+
+    move_motors(-350, -350, rotations=0.5)
+    wait(100)
+
+    pid_line_follower(follow_sensor_port=Port.S1,
+                stop_sensor_port=Port.S4,
+                base_speed=300,
+                Kp=3, Kd=4, Ki=0,
+                target=48,
+                max_angle=None,
+                stop_mode="c",
+                stop_threshold=22,
+                side="l",)
+    wait(150)
+
+    move_motors(350, -350, rotations=0.4)
+    wait(100)
+
+    move_motors(350, 350, rotations=1.52)
+    wait(100)
+
+    move_motors(350, -350, rotations=0.55)
+    wait(100)
+
+    motor_a.run_time(-750, 800)
+    wait(100)
+
+    move_motors(-300, -300, rotations=0.2)
+    wait(100)
+
+    move_motors(300, 300, rotations=0.2)
+    wait(100)
+
+    pid_line_follower(follow_sensor_port=Port.S4,
+                stop_sensor_port=Port.S1,
+                base_speed=567,
+                Kp=3, Kd=4, Ki=0,
+                target=48,
+                max_angle=None,
+                stop_mode="c",
+                stop_threshold=22,
+                side="r",)
+    wait(150)
+
+    move_motors(-400, 400, rotations=0.2)
+    wait(100)
+
+    pid_line_follower(follow_sensor_port=Port.S4,
+            stop_sensor_port=Port.S1,
+            base_speed=501,
+            Kp=3, Kd=4, Ki=0,
+            target=48,
+            max_angle=400,
+            stop_mode="a",
+            stop_threshold=22,
+            side="r",)
+    wait(150)
+
+    move_motors(300, 300, rotations=1.52)
+    wait(100)
+
+    move_motors(350, -350, rotations=0.8)
+    wait(100)
+
+    motor_a.run_time(1000, 750)
+    wait(100)
+
+    #will go do the green things#
+    #---------------------------#
+
+    #--------------------------#
+    # will go place the trowel #
+    pid_line_follower(follow_sensor_port=Port.S1,
+                    stop_sensor_port=Port.S4,
+                    base_speed=600,
+                    Kp=3, Kd=4, Ki=0,
+                    target=48,
+                    max_angle=None,
+                    stop_mode="c",
+                    stop_threshold=22,
+                    side="l",)
+    wait(250)
+
+    move_motors(-400, 400, rotations=0.1)
+    wait(100)
+
+    move_motors(-400, -400, rotations=0.72)
+    wait(100)
+
+    pid_line_follower(follow_sensor_port=Port.S1,
+                    stop_sensor_port=Port.S4,
+                    base_speed=500,
+                    Kp=3, Kd=4, Ki=0,
+                    target=48,
+                    max_angle=None,
+                    stop_mode="c",
+                    stop_threshold=22,
+                    side="l",)
+    
+    wait(100)
+
+    move_motors(-350, 350, rotations=0.8)
+    wait(100)
+
+    move_motors(500, 500, rotations=0.74)
+    wait(100)
+
+    move_motors(500, -500, rotations=0.5)
+
+    motor_a.run_time(-750, 500)
+    wait(100)
+
+    move_motors(750, -750, rotations=4.5)
+    wait(100)
+
+    right_motor.run_angle(-450, 210)
+    wait(100)
+
+    move_motors(450, -450, rotations=0.75)
+    wait(100)
+
+    left_motor.run_angle(450, 210)
+    wait(100)
+
+    move_motors(500, -500, rotations=2.3)
+
+    motor_a.run_time(1000, 750)
+    wait(100)
+
+    '''
+
+    #'''
+    #remove this line before running 
+    mosaic_pattern = [
+        2, 2, 4, 3,
+        1, 1, 2, 3,
+        4, 2, 1, 1
+    ]
+    #'''
+
+    pid_line_follower(follow_sensor_port=Port.S4,
+                    stop_sensor_port=Port.S1,
+                    base_speed=250,
+                    Kp=3, Kd=4, Ki=0,
+                    target=48,
+                    max_angle=None,
+                    stop_mode="c",
+                    stop_threshold=22,
+                    side="r",)
+    
+    wait(100)
+
+    move_motors(-300, 300, rotations=0.08)
+
+    move_motors(300, 300, rotations=0.74)
+    wait(250)
+    # will go place the trowel #
+    #--------------------------#
+
+    return mosaic_pattern
+
+
+
+'''
+#white thing
     move_motors(300, 300, rotations=0.72)
     wait(100)
 
@@ -231,83 +409,26 @@ def tool():
     move_motors(300, 300, rotations=1.52)
     wait(100)
 
-    move_motors(350, -350, rotations=0.5)
+    move_motors(350, -350, rotations=0.4)
     wait(100)
 
-    move_motors(-300, -300, rotations=0.35)
+    move_motors(-300, -300, rotations=0.4)
     wait(100)
 
     motor_a.run_time(1000, 750)
     wait(100)
 
-    move_motors(350, -350, rotations=0.8)
+    move_motors(350, -350, rotations=0.85)
     wait(100)
-
-    move_motors(-350, 350, rotations=0.8)
-    wait(100)
-
-    wait(60000)
-    #will go do the white things#
-    #---------------------------#
-
-    #--------------------------#
-    # will go place the trowel #
-
-    move_motors(-350, 350, rotations=0.5)
-    wait(100)
-
-    move_motors(500, 500, rotations=0.7)
-    wait(100)
-
-    move_motors(500, -500, rotations=0.5)
-
-    motor_a.run_time(-750, 500)
-    wait(100)
-
-    move_motors(750, -750, rotations=4)
-    wait(100)
-
-    right_motor.run_angle(-450, 210)
-    wait(100)
-
-    move_motors(450, -450, rotations=0.75)
-    wait(100)
-
-    left_motor.run_angle(450, 210)
-    wait(100)
-
-    move_motors(500, -500, rotations=2.6)
-
-    motor_a.run_time(1000, 750)
-    wait(100)
-    #'''
-
-    '''
-    #remove this line before running 
-    mosaic_pattern = [
-        4, 3, 4, 3,
-        2, 1, 2, 3,
-        4, 2, 1, 1
-    ]
-    '''
-
-    pid_line_follower(follow_sensor_port=Port.S4,
-                    stop_sensor_port=Port.S1,
-                    base_speed=250,
-                    Kp=3, Kd=4, Ki=0,
-                    target=48,
-                    max_angle=None,
-                    stop_mode="c",
-                    stop_threshold=22,
-                    side="r",)
     
+    left_motor.run_angle(300, 100)
     wait(100)
 
-    move_motors(-300, 300, rotations=0.08)
+    left_motor.run_angle(-300, 100)
+    wait(100)
 
-    move_motors(300, 300, rotations=0.74)
-    wait(250)
-    # will go place the trowel #
-    #--------------------------#
+    move_motors(-350, 350, rotations=0.85)
+    wait(100)
 
-    return mosaic_pattern
+    move_motors(300, 300, rotations=0.4)    
+'''
