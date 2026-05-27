@@ -43,7 +43,7 @@ def grab_second_four_tiles(mosaic_pattern: list, color_arrays: list):
                 side="r",)
     wait(250)
 
-    move_motors(-300, 300, rotations=0.2)
+    move_motors(-300, 300, rotations=0.3)
     move_motors(-300, -300, rotations=0.76)
     grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3] = grabRight2Tiles(mosaic_pattern, grabbed_tiles, color_arrays)
     grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3] = grabLeft2Tiles(mosaic_pattern, grabbed_tiles, color_arrays)
