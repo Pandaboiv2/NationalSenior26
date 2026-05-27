@@ -23,6 +23,13 @@ MOZAIC:
     0, 1, 2, 3
     4, 5, 6, 7
     8, 9, 10, 11
+
+GRABBED_TILES = [
+FRONT
+    0, 0,
+    0, 0,
+BACK
+]
 """
 
 def grab_second_four_tiles(mosaic_pattern: list, color_arrays: list):
@@ -45,34 +52,37 @@ def grab_second_four_tiles(mosaic_pattern: list, color_arrays: list):
 
     move_motors(-300, 300, rotations=0.2)
     move_motors(-300, -300, rotations=0.76)
-    grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3] = grabRight2Tiles(mosaic_pattern, grabbed_tiles, color_arrays)
-    grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3] = grabLeft2Tiles(mosaic_pattern, grabbed_tiles, color_arrays)
+
+    #all same
+    if mosaic_pattern[6] == mosaic_pattern[7] and mosaic_pattern[10] == mosaic_pattern[11] and mosaic_pattern[6] == mosaic_pattern[10]:
+        GrabSAME(grabbed_tiles, color_arrays, mosaic_pattern[6] - 1)
     
+    elif mosaic_pattern[6] == mosaic_pattern[11] and mosaic_pattern[7] == mosaic_pattern[10]:
 
-def grabLeft2Tiles(mosaic_pattern: list, grabbed_tiles: list, color_arrays: list):
-    if mosaic_pattern[8] == mosaic_pattern[9]:
-        MoveToColor(mosaic_pattern[8], 2.5)
-        grabbed_tiles, color_arrays = grab_similar(grabbed_tiles, mosaic_pattern[8], color_arrays)
-        grabbed_tiles[0] = mosaic_pattern[8]
-        grabbed_tiles[1] = mosaic_pattern[8]
+    #horizontal
+    elif mosaic_pattern[6] == mosaic_pattern[7] and mosaic_pattern[10] == mosaic_pattern[11]:
+        GrabHORI(grabbed_tiles, color_arrays, mosaic_pattern[6] - 1, mosaic_pattern[10] - 1)
+    #vertical
+    elif mosaic_pattern[6] == mosaic_pattern[10] and mosaic_pattern[7] == mosaic_pattern[11]:
+        GrabVERT(grabbed_tiles, color_arrays, mosaic_pattern[6] - 1, mosaic_pattern[10] - 1)
+    #vertical only left
+    elif mosaic_pattern[6] == mosaic_pattern[10]:
+        GrabVERTL(grabbed_tiles, color_arrays, mosaic_pattern[6] - 1, mosaic_pattern[11] - 1)
+    #vertical only right
+    elif mosaic_pattern[7] == mosaic_pattern[11]:
+        GrabVERTR(grabbed_tiles, color_arrays, mosaic_pattern[7] - 1, mosaic_pattern[10] - 1)
+    #horizontal only one side
+    elif mosaic_pattern[6] == mosaic_pattern[7] or mosaic_pattern[10] == mosaic_pattern[11]:
+        GrabVERTR(grabbed_tiles, color_arrays, mosaic_pattern[7] - 1, mosaic_pattern[10] - 1)
+    #else
     else:
-        MoveToColor(min(mosaic_pattern[8], mosaic_pattern[9]), 2.5)
-        grabbed_tiles, color_arrays = grab_else(grabbed_tiles, mosaic_pattern[8], mosaic_pattern[9], color_arrays)
+        GrabELSE(grabbed_tiles, color_arrays, mosaic_pattern)
+    
     return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3]
+    # grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3] = grabRight2Tiles(mosaic_pattern, grabbed_tiles, color_arrays)
+    # grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3] = grabLeft2Tiles(mosaic_pattern, grabbed_tiles, color_arrays)
 
-def grabRight2Tiles(mosaic_pattern: list, grabbed_tiles: list, color_arrays: list):
-    if mosaic_pattern[10] == mosaic_pattern[11]:
-        MoveToColor(mosaic_pattern[10], 2.5)
-        grabbed_tiles, color_arrays = grab_similar(grabbed_tiles, mosaic_pattern[10], color_arrays)
-        grabbed_tiles[2] = mosaic_pattern[10]
-        grabbed_tiles[3] = mosaic_pattern[10]
-        MoveToColor(2.5, mosaic_pattern[10])
-    else:
-        MoveToColor(min(mosaic_pattern[10], mosaic_pattern[11]), 2.5)
-        grabbed_tiles, color_arrays = grab_else(grabbed_tiles, mosaic_pattern[10], mosaic_pattern[11], color_arrays, first=False)
-        MoveToColor(2.5, max(mosaic_pattern[10], mosaic_pattern[11]))
-    return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3]
-
+#these programs are now useless
 def grab_similar(grabbed_tiles: list, color_index: int, color_arrays):
     left = GetClosestAvailableTiles(color_arrays[color_index - 1], -1)
     right = GetClosestAvailableTiles(color_arrays[color_index - 1], 1)
@@ -87,6 +97,7 @@ def grab_similar(grabbed_tiles: list, color_index: int, color_arrays):
             color_arrays[color_index - 1] = grab_tiles(color_arrays[color_index - 1], right, 1, grabbed_tiles)
     return grabbed_tiles, color_arrays
 
+#these programs are now useless
 def grab_else(GrabbedTiles, LeftColor, RightColor, ColorArrays, first : bool = True):
     left = GetClosestAvailableTiles(ColorArrays[LeftColor - 1], -1)
     right = GetClosestAvailableTiles(ColorArrays[RightColor - 1], 1)
@@ -125,6 +136,7 @@ def grab_else(GrabbedTiles, LeftColor, RightColor, ColorArrays, first : bool = T
             GrabbedTiles[2] = firstcolor
     return GrabbedTiles, ColorArrays
 
+#move to a color, and turn to face it
 def MoveToColor(target_color: int, starting_color: int) -> None:
     get_distance = 0.5 * (target_color - starting_color)
     if get_distance > 0:
@@ -159,9 +171,32 @@ def MoveToColor(target_color: int, starting_color: int) -> None:
         wait(100)
         move_motors(300, 300, rotations=1.54)
 
+#get closest tile index to the front (0, 1, 2 in that order)
 def GetClosestAvailableTiles(color_list, dir):
     index = 0
     for i in range(3):
         if color_list[i][dir]:
             index = min(index, i)
     return index
+
+#if all 4 tiles are the same
+def GrabSAME(GrabbedTiles, ColorArrays, ColorIndex):
+    MoveToColor(ColorIndex, 2.5)
+    left = GetClosestAvailableTiles(ColorArrays[ColorIndex - 1], -1)
+    right = GetClosestAvailableTiles(ColorArrays[ColorIndex - 1], 1)
+    if left == right:
+        ColorArrays[ColorIndex - 1] = grab_tiles(ColorArrays[ColorIndex - 1], right + 1, 0, GrabbedTiles)
+        grabbed_tiles[0] = ColorIndex
+        grabbed_tiles[1] = ColorIndex
+        grabbed_tiles[2] = ColorIndex
+        grabbed_tiles[3] = ColorIndex
+    else:
+        if left < 2 or right < 2:
+            if left < right:
+                fewest_dir = -1
+            else:
+                fewest_dir = 1
+            
+    return GrabbedTiles, ColorArrays
+
+def Grab
