@@ -50,7 +50,7 @@ def grab_second_four_tiles(mosaic_pattern: list, color_arrays: list):
                 side="r",)
     wait(250)
 
-    move_motors(-300, 300, rotations=0.2)
+    move_motors(-300, 300, rotations=0.3)
     move_motors(-300, -300, rotations=0.76)
 
     #all same
