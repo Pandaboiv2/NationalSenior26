@@ -55,29 +55,22 @@ def grab_second_four_tiles(mosaic_pattern: list, color_arrays: list):
 
     #all same
     if mosaic_pattern[6] == mosaic_pattern[7] and mosaic_pattern[10] == mosaic_pattern[11] and mosaic_pattern[6] == mosaic_pattern[10]:
-        GrabSAME(grabbed_tiles, color_arrays, mosaic_pattern[6] - 1)
+        grabbed_tiles, color_arrays = GrabSAME(grabbed_tiles, color_arrays, mosaic_pattern[6] - 1)
     
     elif mosaic_pattern[6] == mosaic_pattern[11] and mosaic_pattern[7] == mosaic_pattern[10]:
         pass
 
     #horizontal
     elif mosaic_pattern[6] == mosaic_pattern[7] and mosaic_pattern[10] == mosaic_pattern[11]:
-        GrabHORI(grabbed_tiles, color_arrays, mosaic_pattern[6] - 1, mosaic_pattern[10] - 1)
+        grabbed_tiles, color_arrays = GrabHORI(grabbed_tiles, color_arrays, mosaic_pattern[6], mosaic_pattern[10])
     #vertical
     elif mosaic_pattern[6] == mosaic_pattern[10] and mosaic_pattern[7] == mosaic_pattern[11]:
-        GrabVERT(grabbed_tiles, color_arrays, mosaic_pattern[6] - 1, mosaic_pattern[10] - 1)
-    #vertical only left
-    elif mosaic_pattern[6] == mosaic_pattern[10]:
-        GrabVERTL(grabbed_tiles, color_arrays, mosaic_pattern[6] - 1, mosaic_pattern[11] - 1)
-    #vertical only right
-    elif mosaic_pattern[7] == mosaic_pattern[11]:
-        GrabVERTR(grabbed_tiles, color_arrays, mosaic_pattern[7] - 1, mosaic_pattern[10] - 1)
-    #horizontal only one side
-    elif mosaic_pattern[6] == mosaic_pattern[7] or mosaic_pattern[10] == mosaic_pattern[11]:
-        GrabVERTR(grabbed_tiles, color_arrays, mosaic_pattern[7] - 1, mosaic_pattern[10] - 1)
+        grabbed_tiles, color_arrays = GrabVERT(grabbed_tiles, color_arrays, mosaic_pattern[6], mosaic_pattern[7])
     #else
     else:
-        GrabELSE(grabbed_tiles, color_arrays, mosaic_pattern)
+        #GrabELSE(grabbed_tiles, color_arrays, mosaic_pattern)
+        pass
+        #to lazy to do this function. ask claude to do it urself.
     
     return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3]
     # grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3] = grabRight2Tiles(mosaic_pattern, grabbed_tiles, color_arrays)
@@ -171,7 +164,6 @@ def MoveToColor(target_color: int, starting_color: int) -> None:
         move_motors(-300, 300, rotations=0.28)
         wait(100)
         move_motors(300, 300, rotations=1.54)
-
 #get closest tile index to the front (0, 1, 2 in that order)
 def GetClosestAvailableTiles(color_list, dir):
     index = 0
@@ -187,17 +179,133 @@ def GrabSAME(GrabbedTiles, ColorArrays, ColorIndex):
     right = GetClosestAvailableTiles(ColorArrays[ColorIndex - 1], 1)
     if left == right:
         ColorArrays[ColorIndex - 1] = grab_tiles(ColorArrays[ColorIndex - 1], right + 1, 0, GrabbedTiles)
-        grabbed_tiles[0] = ColorIndex
-        grabbed_tiles[1] = ColorIndex
-        grabbed_tiles[2] = ColorIndex
-        grabbed_tiles[3] = ColorIndex
     else:
-        if left < 2 or right < 2:
-            if left < right:
-                fewest_dir = -1
-            else:
-                fewest_dir = 1
-            
-    return GrabbedTiles, ColorArrays
+        if left < right:
+            fewest_dir = 1
+        else:
+            fewest_dir = -1
+        if left >= 2 or right >= 2:
+            ColorArrays[ColorIndex - 1] = grab_tiles(ColorArrays[ColorIndex - 1], 0, -fewest_dir, GrabbedTiles)
+            ColorArrays[ColorIndex - 1] = grab_tiles(ColorArrays[ColorIndex - 1], 1, 0, GrabbedTiles)
+            ColorArrays[ColorIndex - 1] = grab_tiles(ColorArrays[ColorIndex - 1], 2, 0, GrabbedTiles)
+        else:
+            ColorArrays[ColorIndex - 1] = grab_tiles(ColorArrays[ColorIndex - 1], 0, -fewest_dir, GrabbedTiles)
+            ColorArrays[ColorIndex - 1] = grab_tiles(ColorArrays[ColorIndex - 1], 1, 0, GrabbedTiles)
+            ColorArrays[ColorIndex - 1] = grab_tiles(ColorArrays[ColorIndex - 1], 2, fewest_dir, GrabbedTiles)
 
-#def Grab
+    GrabbedTiles[0] = ColorIndex
+    GrabbedTiles[1] = ColorIndex
+    GrabbedTiles[2] = ColorIndex
+    GrabbedTiles[3] = ColorIndex
+    return GrabbedTiles, ColorArrays
+def GrabHORI(GrabbedTiles, ColorArrays, ColorTOP, ColorBOTTOM):
+    MoveToColor(ColorBOTTOM, 2.5)
+    lefttop = GetClosestAvailableTiles(ColorArrays[ColorTOP - 1], -1)
+    righttop = GetClosestAvailableTiles(ColorArrays[ColorTOP - 1], 1)
+
+    leftbot = GetClosestAvailableTiles(ColorArrays[ColorBOTTOM - 1], -1)
+    rightbot = GetClosestAvailableTiles(ColorArrays[ColorBOTTOM - 1], 1)
+
+    if leftbot == rightbot:
+        ColorArrays[ColorBOTTOM - 1] = grab_tiles(ColorArrays[ColorBOTTOM - 1], leftbot, 0, GrabbedTiles)
+    else:
+        if leftbot < rightbot:
+            ColorArrays[ColorBOTTOM - 1] = grab_tiles(ColorArrays[ColorBOTTOM - 1], leftbot, -1, GrabbedTiles)
+            ColorArrays[ColorBOTTOM - 1] = grab_tiles(ColorArrays[ColorBOTTOM - 1], rightbot, 1, GrabbedTiles)
+        else:
+            ColorArrays[ColorBOTTOM - 1] = grab_tiles(ColorArrays[ColorBOTTOM - 1], rightbot, 1, GrabbedTiles)
+            ColorArrays[ColorBOTTOM - 1] = grab_tiles(ColorArrays[ColorBOTTOM - 1], leftbot, -1, GrabbedTiles)
+
+    MoveToColor(ColorTOP, ColorBOTTOM)
+
+    if lefttop == righttop:
+        ColorArrays[ColorTOP - 1] = grab_tiles(ColorArrays[ColorTOP - 1], lefttop, 0, GrabbedTiles)
+    else:
+        if lefttop < righttop:
+            ColorArrays[ColorTOP - 1] = grab_tiles(ColorArrays[ColorTOP - 1], righttop, -1, GrabbedTiles)
+            ColorArrays[ColorTOP - 1] = grab_tiles(ColorArrays[ColorTOP - 1], lefttop, 1, GrabbedTiles)
+        else:
+            ColorArrays[ColorTOP - 1] = grab_tiles(ColorArrays[ColorTOP - 1], righttop, 1, GrabbedTiles)
+            ColorArrays[ColorTOP - 1] = grab_tiles(ColorArrays[ColorTOP - 1], lefttop, -1, GrabbedTiles)
+
+    
+    GrabbedTiles[0] = ColorTOP
+    GrabbedTiles[1] = ColorTOP
+    GrabbedTiles[2] = ColorBOTTOM
+    GrabbedTiles[3] = ColorBOTTOM
+    return GrabbedTiles, ColorArrays
+def GrabVERT(GrabbedTiles, ColorArrays, ColorLEFT, ColorRIGHT):
+    first_color = min(ColorLEFT, ColorRIGHT)
+    second_color = max(ColorLEFT, ColorRIGHT)
+    
+    LLeft = GetClosestAvailableTiles(ColorArrays[ColorLEFT - 1], -1)
+    LRight = GetClosestAvailableTiles(ColorArrays[ColorLEFT - 1], 1)
+
+    RLeft = GetClosestAvailableTiles(ColorArrays[ColorRIGHT - 1], -1)
+    RRight = GetClosestAvailableTiles(ColorArrays[ColorRIGHT - 1], 1)
+
+    if left_color == first_color:
+        first_dir = -1
+        second_dir = 1
+    else:
+        first_dir = 1
+        second_dir = -1
+    
+    MoveToColor(first_color, 2.5)
+    if LLeft < LRight:
+        LFewest = 1
+    else:
+        LFewest = -1
+    
+    if RLeft < RRight:
+        RFewest = 1
+    else:
+        RFewest = -1
+
+    if first_dir == -1:
+        if LLeft == LRight:
+            ColorArrays[first_color - 1] = grab_tiles(ColorArrays[first_color - 1], LLeft, first_dir, GrabbedTiles)
+        else:
+            ColorArrays[first_color - 1] = grab_tiles(ColorArrays[first_color - 1], LLeft if LFewest == -1 else LRight, 0, GrabbedTiles)
+
+    else:
+        if RLeft == RRight:
+            ColorArrays[first_color - 1] = grab_tiles(ColorArrays[first_color - 1], RLeft, first_dir, GrabbedTiles)
+        else:
+            ColorArrays[first_color - 1] = grab_tiles(ColorArrays[first_color - 1], RLeft if RFewest == -1 else RRight, 0, GrabbedTiles)
+
+    go_to_some_tiles(second_color, first_color)
+
+    if second_dir == -1:
+        if LLeft == LRight:
+            ColorArrays[second_color - 1] = grab_tiles(ColorArrays[second_color - 1], LLeft, second_dir, GrabbedTiles)
+            ColorArrays[second_color - 1] = grab_tiles(ColorArrays[second_color - 1], LLeft, 0, GrabbedTiles)
+        else:
+            ColorArrays[second_color - 1] = grab_tiles(ColorArrays[second_color - 1], LLeft if LFewest == -1 else LRight, 0, GrabbedTiles)
+            ColorArrays[second_color - 1] = grab_tiles(ColorArrays[second_color - 1], LRight if LFewest == -1 else LLeft, second_dir, GrabbedTiles)
+    else:
+        if RLeft == RRight:
+            ColorArrays[second_color - 1] = grab_tiles(ColorArrays[second_color - 1], RLeft, second_dir, GrabbedTiles)
+            ColorArrays[second_color - 1] = grab_tiles(ColorArrays[second_color - 1], RLeft, 0, GrabbedTiles)
+        else:
+            ColorArrays[second_color - 1] = grab_tiles(ColorArrays[second_color - 1], RLeft if RFewest == -1 else RRight, 0, GrabbedTiles)
+            ColorArrays[second_color - 1] = grab_tiles(ColorArrays[second_color - 1], RRight if RFewest == -1 else RLeft, second_dir, GrabbedTiles)
+
+    go_to_some_tiles(first_color, second_color)
+    if first_dir == -1:
+        if LLeft == LRight:
+            ColorArrays[first_color - 1] = grab_tiles(ColorArrays[first_color - 1], LLeft, first_dir, GrabbedTiles)
+        else:
+            ColorArrays[first_color - 1] = grab_tiles(ColorArrays[first_color - 1], LRight if LFewest == -1 else LRight, first_dir, GrabbedTiles)
+    else:
+        if RLeft == RRight:
+            ColorArrays[first_color - 1] = grab_tiles(ColorArrays[first_color - 1], RLeft, first_dir, GrabbedTiles)
+        else:
+            ColorArrays[first_color - 1] = grab_tiles(ColorArrays[first_color - 1], LRight if LFewest == -1 else LRight, first_dir, GrabbedTiles)
+
+    GrabbedTiles[0] = ColorLEFT
+    GrabbedTiles[1] = ColorRIGHT
+    GrabbedTiles[2] = ColorLEFT
+    GrabbedTiles[3] = ColorRIGHT
+
+    return GrabbedTiles, ColorArrays
