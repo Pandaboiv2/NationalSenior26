@@ -6,6 +6,8 @@ from config import ev3, left_motor, right_motor, motor_a, motor_d, colorsensorLe
 from outil import move_motors
 from finding_mozaic_pieces import grab_tiles
 
+
+#boy im gonna crash out 
 """
 REMINDER:
 CLOCKWISE = --
@@ -75,60 +77,6 @@ def grab_second_four_tiles(mosaic_pattern: list, color_arrays: list):
     return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3]
     # grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3] = grabRight2Tiles(mosaic_pattern, grabbed_tiles, color_arrays)
     # grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3] = grabLeft2Tiles(mosaic_pattern, grabbed_tiles, color_arrays)
-
-#these programs are now useless
-def grab_similar(grabbed_tiles: list, color_index: int, color_arrays):
-    left = GetClosestAvailableTiles(color_arrays[color_index - 1], -1)
-    right = GetClosestAvailableTiles(color_arrays[color_index - 1], 1)
-    if left == right:
-        color_arrays[color_index - 1] = grab_tiles(color_arrays[color_index - 1], left, 0, grabbed_tiles)
-    else:
-        if left > right:
-            color_arrays[color_index - 1] = grab_tiles(color_arrays[color_index - 1], right, 1, grabbed_tiles)
-            color_arrays[color_index - 1] = grab_tiles(color_arrays[color_index - 1], left, -1, grabbed_tiles)
-        else:
-            color_arrays[color_index - 1] = grab_tiles(color_arrays[color_index - 1], left, -1, grabbed_tiles)
-            color_arrays[color_index - 1] = grab_tiles(color_arrays[color_index - 1], right, 1, grabbed_tiles)
-    return grabbed_tiles, color_arrays
-
-#these programs are now useless
-def grab_else(GrabbedTiles, LeftColor, RightColor, ColorArrays, first : bool = True):
-    left = GetClosestAvailableTiles(ColorArrays[LeftColor - 1], -1)
-    right = GetClosestAvailableTiles(ColorArrays[RightColor - 1], 1)
-    firstcolor = min(LeftColor, RightColor)
-    secondcolor = max(LeftColor, RightColor)
-    if firstcolor == left:
-        firstdir = -1
-    else:
-        firstdir = 1
-    seconddir = firstdir*-1
-    if firstdir == -1:
-        ColorArrays[firstcolor - 1] = grab_tiles(ColorArrays[firstcolor - 1], left, firstdir, GrabbedTiles)
-    else:
-        ColorArrays[firstcolor - 1] = grab_tiles(ColorArrays[firstcolor - 1], right, firstdir, GrabbedTiles)
-        
-    MoveToColor(secondcolor, firstcolor)
-
-    if seconddir == 1:
-        ColorArrays[secondcolor - 1] = grab_tiles(ColorArrays[secondcolor - 1], right, seconddir, GrabbedTiles)
-    else:
-        ColorArrays[secondcolor - 1] = grab_tiles(ColorArrays[secondcolor - 1], left, seconddir, GrabbedTiles)
-    
-    if first:
-        if firstdir == 1:
-            GrabbedTiles[0] = secondcolor
-            GrabbedTiles[1] = firstcolor
-        else:
-            GrabbedTiles[1] = secondcolor
-            GrabbedTiles[0] = firstcolor
-    else:
-        if firstdir == 1:
-            GrabbedTiles[2] = secondcolor
-            GrabbedTiles[3] = firstcolor
-        else:
-            GrabbedTiles[3] = secondcolor
-            GrabbedTiles[2] = firstcolor
-    return GrabbedTiles, ColorArrays
 
 #move to a color, and turn to face it
 def MoveToColor(target_color: int, starting_color: int) -> None:
