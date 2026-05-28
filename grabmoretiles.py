@@ -58,6 +58,7 @@ def grab_second_four_tiles(mosaic_pattern: list, color_arrays: list):
         GrabSAME(grabbed_tiles, color_arrays, mosaic_pattern[6] - 1)
     
     elif mosaic_pattern[6] == mosaic_pattern[11] and mosaic_pattern[7] == mosaic_pattern[10]:
+        pass
 
     #horizontal
     elif mosaic_pattern[6] == mosaic_pattern[7] and mosaic_pattern[10] == mosaic_pattern[11]:
@@ -199,4 +200,4 @@ def GrabSAME(GrabbedTiles, ColorArrays, ColorIndex):
             
     return GrabbedTiles, ColorArrays
 
-def Grab
+#def Grab

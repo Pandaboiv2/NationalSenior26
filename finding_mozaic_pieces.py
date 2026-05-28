@@ -162,6 +162,45 @@ def grab_vertical(mosaic_pattern: list, grabbed_tiles: list, color_arrays: list)
 
     return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3], first_color
 
+def grab_vertical_single(grabbed_tiles, color_arrays, mozaic_colors):
+    if mozaic_colors[0] == mozaic_colors[1]:
+        direction = -1
+        first_color = mozaic_colors[0]
+        second_top_color = mozaic_colors[5]
+        second_bottom_color = mozaic_colors[4]
+    else:
+        direction = 1
+        first_color = mozaic_color[4]
+        second_top_color = mozaic_colors[1]
+        second_bottom_color = mozaic_colors[0]
+
+    # Trip 2: back of second color
+    move_to_tiles(first_color)
+    color_arrays[first_color - 1] = grab_tiles(color_arrays[first_color - 1], 0, direction, grabbed_tiles)
+    color_arrays[first_color - 1] = grab_tiles(color_arrays[first_color - 1], 0, 0, grabbed_tiles)
+    ev3.speaker.beep()
+    if direction == -1:
+        grabbed_tiles[0] = first_color
+        grabbed_tiles[2] = first_color
+    else:
+        grabbed_tiles[1] = first_color
+        grabbed_tiles[3] = first_color
+
+    go_to_some_tiles(second_bottom_color, first_color)
+    color_arrays[second_bottom_color - 1] = grab_tiles(color_arrays[second_bottom_color - 1], 0, -direction, grabbed_tiles)
+
+    go_to_some_tiles(second_top_color, second_bottom_color)
+    color_arrays[second_top_color - 1] = grab_tiles(color_arrays[second_top_color - 1], 0, -direction, grabbed_tiles)
+
+    if direction == -1:
+        grabbed_tiles[1] = second_top_color
+        grabbed_tiles[3] = second_bottom_color
+    else:
+        grabbed_tiles[0] = second_top_color
+        grabbed_tiles[2] = second_bottom_color
+    
+    return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3], second_top_color
+
 def grab_else(mosaic_pattern: list, grabbed_tiles: list, color_arrays: list):
     back_left = mosaic_pattern[0]
     back_right = mosaic_pattern[4]
@@ -302,45 +341,6 @@ def grab_first_four_tiles(mosaic_pattern: list, grabbed_tiles: list, color_array
 
     return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3]
 
-def grab_vertical_single(grabbed_tiles, color_arrays, mozaic_colors):
-    if mozaic_colors[0] == mozaic_colors[1]:
-        direction = -1
-        first_color = mozaic_colors[0]
-        second_top_color = mozaic_colors[5]
-        second_bottom_color = mozaic_colors[4]
-    else:
-        direction = 1
-        first_color = mozaic_color[4]
-        second_top_color = mozaic_colors[1]
-        second_bottom_color = mozaic_colors[0]
-
-    # Trip 2: back of second color
-    move_to_tiles(first_color)
-    color_arrays[first_color - 1] = grab_tiles(color_arrays[first_color - 1], 0, direction, grabbed_tiles)
-    color_arrays[first_color - 1] = grab_tiles(color_arrays[first_color - 1], 0, 0, grabbed_tiles)
-    ev3.speaker.beep()
-    if direction == -1:
-        grabbed_tiles[0] = first_color
-        grabbed_tiles[2] = first_color
-    else:
-        grabbed_tiles[1] = first_color
-        grabbed_tiles[3] = first_color
-
-    go_to_some_tiles(second_bottom_color, first_color)
-    color_arrays[second_bottom_color - 1] = grab_tiles(color_arrays[second_bottom_color - 1], 0, -direction, grabbed_tiles)
-
-    go_to_some_tiles(second_top_color, second_bottom_color)
-    color_arrays[second_top_color - 1] = grab_tiles(color_arrays[second_top_color - 1], 0, -direction, grabbed_tiles)
-
-    if direction == -1:
-        grabbed_tiles[1] = second_top_color
-        grabbed_tiles[3] = second_bottom_color
-    else:
-        grabbed_tiles[0] = second_top_color
-        grabbed_tiles[2] = second_bottom_color
-    
-    return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3], second_top_color
-
 def go_to_center(starting_color) -> None:
     get_distance = 0.5 * (2.5 - starting_color)
     #at yellow
@@ -355,11 +355,11 @@ def go_to_center(starting_color) -> None:
     #at white
     elif starting_color == 4:
         get_distance += -0.45
-    move_motors(-350, 350, rotations=get_distance)
+    move_motors(-400, 400, rotations=get_distance)
     wait(100)
-    move_motors(-300, -300, rotations=0.76)
+    move_motors(-400, -400, rotations=0.76)
     wait(100)
-    move_motors(-300, 300, rotations=0.25)
+    move_motors(-390, 390, rotations=0.25)
     wait(100)
     
     pid_line_follower(follow_sensor_port=Port.S4,
@@ -371,13 +371,18 @@ def go_to_center(starting_color) -> None:
                 stop_mode="c",
                 stop_threshold=22,
                 side="l",)
-    wait(250)
+    wait(100)
+
+    motor_a.run_time(500, 300)
+    wait(100)
 
     left_motor.run_angle(-300, 65)
     wait(100)
     right_motor.run_angle(300, 65)
     wait(100)
-    
+
+    motor_d.run_time(-200, 200)
+    wait(100)
     motor_a.run_time(-750, 400)
     wait(100)
 
@@ -390,9 +395,9 @@ def go_to_center(starting_color) -> None:
     motor_d.run_time(750, 650)
     wait(100)
 
-    motor_a.run_time(-500, 300)
+    motor_a.run_time(-750, 600)
     wait(100)
-    motor_a.run_time(750, 650)
+    motor_a.run_time(1000, 650)
     wait(100)
     motor_a.run_time(-500, 600)
     wait(100)
@@ -403,6 +408,5 @@ def go_to_center(starting_color) -> None:
     motor_a.run_time(750, 500)
     wait(100)
 
-    motor_a.run_time(-750, 500)
+    motor_a.run_time(-1050, 500)
     wait(100)
-
