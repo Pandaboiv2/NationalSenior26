@@ -32,6 +32,7 @@ def move_motors(left_speed, right_speed, duration_ms=None, rotations=None, degre
 
 def tool():
     global mosaic_pattern 
+    '''
     #--------------------------------#
     # will go scan and take the bowl #
     right_motor.run_angle(500, 90)
@@ -74,11 +75,22 @@ def tool():
 
     move_motors(500, -500, rotations=0.67)
     wait(100)
+    '''
 
+
+
+
+
+
+    '''
     mosaic_pattern = scan_mosaic()
     print(mosaic_pattern)
     '''
-    
+
+    #############################
+
+
+    '''
     move_motors(-750, -750, rotations=1.52)
     wait(100)
 
@@ -293,21 +305,23 @@ def tool():
     move_motors(450, -450, rotations=0.8)
     wait(100)
 
-    left_motor.run_angle(450, 210)
+    left_moto0r.run_angle(450, 210)
     wait(100)
 
     move_motors(500, -500, rotations=2.3)
 
     motor_a.run_time(1000, 750)
     wait(100)
-    
+    '''
+
     #remove this line before running 
     mosaic_pattern = [
-        3, 1, 4, 3,
-        3, 1, 2, 3,
+        2, 2, 4, 3,
+        2, 1, 2, 2,
         4, 2, 1, 1
     ]
 
+    '''
     pid_line_follower(follow_sensor_port=Port.S4,
                     stop_sensor_port=Port.S1,
                     base_speed=250,
@@ -323,6 +337,9 @@ def tool():
     move_motors(-300, 300, rotations=0.08)
     '''
 
+    #############################3
+
+
     #move_motors(300, 300, rotations=0.74) 
     move_motors(-500, 500, rotations=0.5)
     wait(100)
@@ -330,20 +347,18 @@ def tool():
     move_motors(-400, -400, rotations=0.74)
     wait(100)
 
-    pid_line_follower(follow_sensor_port=Port.S1,
-                    stop_sensor_port=Port.S4,
+    pid_line_follower(follow_sensor_port=Port.S4,
+                    stop_sensor_port=Port.S1,
                     base_speed=750,
                     Kp=2, Kd=3, Ki=0,
                     target=48,
-                    max_angle=None,
-                    stop_mode="c",
+                    max_angle=1400,
+                    stop_mode="a",
                     stop_threshold=22,
-                    side="l",)
+                    side="r",)
 
     wait(100)
 
-    move_motors(-400, 400, rotations=0.3)
-    wait(100)
     move_motors(-300, -300, rotations=0.74) 
     wait(100)
     # will go place the trowel #
