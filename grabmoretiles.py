@@ -39,7 +39,7 @@ def grab_second_four_tiles(mosaic_pattern: list, color_arrays: list):
         0, 0,
         0, 0,
     ]
-    move_motors(300, -300, rotations=0.8)
+    move_motors(500, -500, rotations=1.5)
     move_motors(300, 300, rotations=1.48)
     pid_line_follower(follow_sensor_port=Port.S1,
                 stop_sensor_port=Port.S4,
@@ -52,8 +52,8 @@ def grab_second_four_tiles(mosaic_pattern: list, color_arrays: list):
                 side="r",)
     wait(250)
 
-    move_motors(-300, 300, rotations=0.3)
-    move_motors(-300, -300, rotations=0.76)
+    move_motors(-400, 400, rotations=0.3)
+    move_motors(-400, -400, rotations=0.76)
 
     #all same
     if mosaic_pattern[6] == mosaic_pattern[7] and mosaic_pattern[10] == mosaic_pattern[11] and mosaic_pattern[6] == mosaic_pattern[10]:
@@ -146,6 +146,7 @@ def GrabSAME(GrabbedTiles, ColorArrays, ColorIndex):
     GrabbedTiles[2] = ColorIndex
     GrabbedTiles[3] = ColorIndex
     return GrabbedTiles, ColorArrays
+
 def GrabHORI(GrabbedTiles, ColorArrays, ColorTOP, ColorBOTTOM):
     MoveToColor(ColorBOTTOM, 2.5)
     lefttop = GetClosestAvailableTiles(ColorArrays[ColorTOP - 1], -1)
@@ -182,6 +183,7 @@ def GrabHORI(GrabbedTiles, ColorArrays, ColorTOP, ColorBOTTOM):
     GrabbedTiles[2] = ColorBOTTOM
     GrabbedTiles[3] = ColorBOTTOM
     return GrabbedTiles, ColorArrays
+    
 def GrabVERT(GrabbedTiles, ColorArrays, ColorLEFT, ColorRIGHT):
     first_color = min(ColorLEFT, ColorRIGHT)
     second_color = max(ColorLEFT, ColorRIGHT)
