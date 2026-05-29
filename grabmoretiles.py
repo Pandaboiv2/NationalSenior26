@@ -259,3 +259,35 @@ def GrabVERT(GrabbedTiles, ColorArrays, ColorLEFT, ColorRIGHT):
     GrabbedTiles[3] = ColorRIGHT
 
     return GrabbedTiles, ColorArrays
+
+def go_to_bottom(starting_color) -> None:
+    get_distance = 0.5 * (0 - starting_color)
+    #at yellow
+    if starting_color == 1:
+        get_distance += 0.8
+    #at blue
+    elif starting_color == 2:
+        get_distance += 0.3
+    #at green
+    elif starting_color == 3:
+        get_distance += -0.12
+    #at white
+    elif starting_color == 4:
+        get_distance += -0.45
+    move_motors(-350, 350, rotations=get_distance)
+    wait(50)
+    move_motors(-300, -300, rotations=0.76)
+    wait(50)
+    move_motors(-300, 300, rotations=0.25)
+    wait(50)
+    
+    pid_line_follower(follow_sensor_port=Port.S4,
+                stop_sensor_port=Port.S1,
+                base_speed=350,
+                Kp=3, Kd=4, Ki=0,
+                target=48,
+                max_angle=None,
+                stop_mode="c",
+                stop_threshold=22,
+                side="l",)
+    wait(250)
