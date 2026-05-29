@@ -5,23 +5,25 @@ from line_follower import pid_line_follower
 from config import ev3, left_motor, right_motor, motor_a, motor_d, colorsensorLeft, colorsensorRight
 from outil import move_motors
 
-
 def grab_tiles(target_matrix: list, target_row: int, direction: int, grabbed_tiles: list, facing: int = 1) -> list:
     # direction: 0 = both, -1 = left, 1 = right
 
-    # --- NEW LOGIC: choose row 0 → 1 → 2 ---
     if abs(direction) > 0:
         # left or right grab
         side = 0 if direction == -1 else 1
 
-        # find the closest available row (0 → 1 → 2)
-        for row in [0, 1, 2]:
-            if target_matrix[row][side]:
-                target_row = row
-                break
+        # NEW: if target_row is forced, use it
+        if target_row in (0, 1, 2):
+            row = target_row
+        else:
+            # auto mode (old behavior)
+            for r in [0, 1, 2]:
+                if target_matrix[r][side]:
+                    row = r
+                    break
 
         # mark tile as used
-        target_matrix[target_row][side] = False
+        target_matrix[row][side] = False
 
         # perform movement
         move_motors(300 * direction * facing, -300 * direction * facing,
@@ -30,14 +32,17 @@ def grab_tiles(target_matrix: list, target_row: int, direction: int, grabbed_til
 
     else:
         # grabbing both tiles (pair)
-        for row in [0, 1, 2]:
-            if target_matrix[row][0] and target_matrix[row][1]:
-                target_row = row
-                break
+        if target_row in (0, 1, 2):
+            row = target_row
+        else:
+            for r in [0, 1, 2]:
+                if target_matrix[r][0] and target_matrix[r][1]:
+                    row = r
+                    break
 
         # mark both as used
-        target_matrix[target_row][0] = False
-        target_matrix[target_row][1] = False
+        target_matrix[row][0] = False
+        target_matrix[row][1] = False
 
         move_motors(300, 300, rotations=0.745)
 
@@ -50,20 +55,19 @@ def grab_tiles(target_matrix: list, target_row: int, direction: int, grabbed_til
     else:
         motor_a.run_time(-750, 400)
 
-    move_motors(-300, 300, rotations=0.575 + target_row * 0.35)
+    move_motors(-300, 300, rotations=0.575 + row * 0.35)
     wait(80)
     motor_a.run_time(300, 600)
     motor_d.run(-750)
     wait(600)
     motor_a.run_time(-500, 300)
-    move_motors(300, -300, rotations=0.56 + target_row * 0.35)
+    move_motors(300, -300, rotations=0.56 + row * 0.35)
     move_motors(-300 * facing, -300 * facing, rotations=0.74)
 
     if abs(direction) > 0:
         move_motors(-300 * direction, 300 * direction, rotations=0.33)
 
     return target_matrix
-
 
 def move_to_tiles(color: int):
     # starts behind yellow
@@ -73,7 +77,7 @@ def move_to_tiles(color: int):
             follow_sensor_port=Port.S4,
             stop_sensor_port=Port.S1,
             base_speed=300,
-            Kp=2, Kd=3, Ki=0,
+            Kp=3, Kd=4, Ki=0,
             target=48,
             max_angle=None,
             stop_mode="c",
@@ -94,7 +98,7 @@ def go_to_some_tiles(target_color: int, starting_color: int) -> None:
             follow_sensor_port=Port.S4,
             stop_sensor_port=Port.S1,
             base_speed=300,
-            Kp=3, Kd=3, Ki=0,
+            Kp=3, Kd=4, Ki=0,
             target=48,
             max_angle=None,
             stop_mode="c",
@@ -112,7 +116,7 @@ def go_to_some_tiles(target_color: int, starting_color: int) -> None:
             follow_sensor_port=Port.S1,
             stop_sensor_port=Port.S4,
             base_speed=300,
-            Kp=3, Kd=3, Ki=0,
+            Kp=3, Kd=4, Ki=0,
             target=48,
             max_angle=None,
             stop_mode="c",
@@ -303,24 +307,23 @@ def grab_three_same(mosaic_pattern, grabbed_tiles, color_arrays):
             triple_color = color
             break
 
-    #find the color that isn't the same
+    # find the odd color
     for color in [a, b, c, d]:
         if color != triple_color:
             odd_color = color
             break
 
-    #positions of the same color
+    # positions of the triple color
     positions = []
-    if a == triple_color: positions.append(("back", -1))   # back-left
-    if b == triple_color: positions.append(("front", -1))  # front-left
-    if c == triple_color: positions.append(("back", 1))    # back-right
-    if d == triple_color: positions.append(("front", 1))   # front-right
+    if a == triple_color: positions.append(("back", -1))
+    if b == triple_color: positions.append(("front", -1))
+    if c == triple_color: positions.append(("back", 1))
+    if d == triple_color: positions.append(("front", 1))
 
-    #check if the back row is same color
+    # check if back row is same color
     back_same = (a == triple_color and c == triple_color)
 
-    #the back row is the same color
-    #take 
+    # --- SCENARIO 1: back row same color ---
     if back_same:
         # take back-left and back-right first
         move_to_tiles(triple_color)
@@ -328,7 +331,7 @@ def grab_three_same(mosaic_pattern, grabbed_tiles, color_arrays):
         grabbed_tiles[2] = triple_color
         grabbed_tiles[3] = triple_color
 
-        # then take the front tile of the same color
+        # take the front tile of the same color
         if b == triple_color:
             front_dir = -1
             front_index = 0
@@ -336,7 +339,7 @@ def grab_three_same(mosaic_pattern, grabbed_tiles, color_arrays):
             front_dir = 1
             front_index = 1
 
-        go_to_some_tiles(triple_color, triple_color)
+        # NO MOVEMENT — just rotate and grab row 1
         color_arrays[triple_color - 1] = grab_tiles(color_arrays[triple_color - 1], 1, front_dir, grabbed_tiles)
         grabbed_tiles[front_index] = triple_color
 
@@ -349,7 +352,8 @@ def grab_three_same(mosaic_pattern, grabbed_tiles, color_arrays):
 
         return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3], odd_color
 
-    # --- SCENARIO 2: back row NOT same color → odd first ---
+    # --- SCENARIO 2: back row NOT same color ---
+    # --- SCENARIO 2: back row NOT same color ---
     else:
         # take odd color first
         move_to_tiles(odd_color)
@@ -358,10 +362,27 @@ def grab_three_same(mosaic_pattern, grabbed_tiles, color_arrays):
         color_arrays[odd_color - 1] = grab_tiles(color_arrays[odd_color - 1], 0, odd_dir, grabbed_tiles)
         grabbed_tiles[odd_index] = odd_color
 
-        # now take the 3 same color consecutively
-        # force target_row = 1 (your rule)
-        for pos, direction in positions:
-            go_to_some_tiles(triple_color, odd_color)
+        # build correct order of triple tiles
+        triple_order = []
+
+        # back-left
+        if a == triple_color:
+            triple_order.append(("back", -1))
+
+        # back-right
+        if c == triple_color:
+            triple_order.append(("back", 1))
+
+        # front-left
+        if b == triple_color:
+            triple_order.append(("front", -1))
+
+        # front-right
+        if d == triple_color:
+            triple_order.append(("front", 1))
+
+        # now take the 3 same color consecutively (force row 1)
+        for pos, direction in triple_order:
             color_arrays[triple_color - 1] = grab_tiles(color_arrays[triple_color - 1], 1, direction, grabbed_tiles)
 
             if pos == "front":
@@ -479,6 +500,7 @@ def grab_first_four_tiles(mosaic_pattern: list, grabbed_tiles: list, color_array
 
     #3 same colors
     elif len({a,b,c,d})==2 and not(a==b==c==d) and (a==b==c or a==b==d or a==c==d or b==c==d):
+        ev3.speaker.beep()
         grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3], last_color = grab_three_same(mosaic_pattern, grabbed_tiles, color_arrays)
         go_to_center(last_color)
 
@@ -521,7 +543,7 @@ def go_to_center(starting_color) -> None:
     elif starting_color == 2:
         distance += 0.3
     elif starting_color == 3:
-        distance += -0.12
+        distance += -0.08
     elif starting_color == 4:
         distance += -0.45
 
@@ -545,18 +567,18 @@ def go_to_center(starting_color) -> None:
     )
     wait(100)
 
-    motor_a.run_time(200, 300)
+    motor_a.run_time(200, 100)
     wait(100)
 
     left_motor.run_angle(-300, 65)
     wait(100)
-    right_motor.run_angle(300, 65)
+    right_motor.run_angle(300, 60)
     wait(100)
 
     motor_a.run_time(-850, 500)
     wait(100)
 
-    move_motors(-300, 300, rotations=0.7)
+    move_motors(-300, 300, rotations=0.65)
     wait(250)
 
     motor_a.run_time(550, 350)
@@ -565,9 +587,9 @@ def go_to_center(starting_color) -> None:
     motor_d.run_time(750, 650)
     wait(100)
 
-    motor_a.run_time(-750, 600)
+    motor_a.run_time(-1000, 600)
     wait(100)
-    motor_a.run_time(1000, 650)
+    motor_a.run_time(1000, 850)
     wait(100)
     motor_a.run_time(-500, 600)
     wait(100)
@@ -575,7 +597,7 @@ def go_to_center(starting_color) -> None:
     move_motors(300, -300, rotations=0.3)
     wait(100)
 
-    motor_a.run_time(750, 500)
+    motor_a.run_time(1000, 500)
     wait(100)
 
     motor_a.run_time(-1050, 500)

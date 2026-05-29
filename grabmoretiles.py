@@ -40,10 +40,10 @@ def grab_second_four_tiles(mosaic_pattern: list, color_arrays: list):
         0, 0,
     ]
     move_motors(500, -500, rotations=1.5)
-    move_motors(300, 300, rotations=1.48)
+    move_motors(500, 500, rotations=1.48)
     pid_line_follower(follow_sensor_port=Port.S1,
                 stop_sensor_port=Port.S4,
-                base_speed=300,
+                base_speed=380,
                 Kp=3, Kd=4, Ki=0,
                 target=48,
                 max_angle=None,
@@ -52,7 +52,7 @@ def grab_second_four_tiles(mosaic_pattern: list, color_arrays: list):
                 side="r",)
     wait(250)
 
-    move_motors(-400, 400, rotations=0.3)
+    move_motors(-400, 400, rotations=0.35)
     move_motors(-400, -400, rotations=0.76)
 
     #all same
