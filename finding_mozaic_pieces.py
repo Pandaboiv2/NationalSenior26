@@ -353,44 +353,60 @@ def grab_three_same(mosaic_pattern, grabbed_tiles, color_arrays):
         return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3], odd_color
 
     # --- SCENARIO 2: back row NOT same color ---
-    # --- SCENARIO 2: back row NOT same color ---
     else:
-        # take odd color first
+        # 1) Take the odd color first
         move_to_tiles(odd_color)
         odd_dir = -1 if b == odd_color else 1
         odd_index = 0 if odd_dir == -1 else 1
-        color_arrays[odd_color - 1] = grab_tiles(color_arrays[odd_color - 1], 0, odd_dir, grabbed_tiles)
+
+        color_arrays[odd_color - 1] = grab_tiles(
+            color_arrays[odd_color - 1],
+            0,              # odd tile is ALWAYS in the back row
+            odd_dir,
+            grabbed_tiles
+        )
         grabbed_tiles[odd_index] = odd_color
 
-        # build correct order of triple tiles
+        # 2) Move to the triple_color lane
+        go_to_some_tiles(triple_color, odd_color)
+
+        # 3) Build triple order (back first, then front)
         triple_order = []
 
-        # back-left
+        # BACK FIRST
         if a == triple_color:
-            triple_order.append(("back", -1))
-
-        # back-right
+            triple_order.append(("back", -1))   # back-left
         if c == triple_color:
-            triple_order.append(("back", 1))
+            triple_order.append(("back", 1))    # back-right
 
-        # front-left
+        # THEN FRONT
         if b == triple_color:
-            triple_order.append(("front", -1))
-
-        # front-right
+            triple_order.append(("front", -1))  # front-left
         if d == triple_color:
-            triple_order.append(("front", 1))
+            triple_order.append(("front", 1))   # front-right
 
-        # now take the 3 same color consecutively (force row 1)
+        # 4) Grab the 3 same-color tiles in correct order
         for pos, direction in triple_order:
-            color_arrays[triple_color - 1] = grab_tiles(color_arrays[triple_color - 1], 1, direction, grabbed_tiles)
 
+            # correct row
+            row = 0 if pos == "back" else 1
+
+            color_arrays[triple_color - 1] = grab_tiles(
+                color_arrays[triple_color - 1],
+                row,
+                direction,
+                grabbed_tiles
+            )
+
+            # update grabbed_tiles
             if pos == "front":
                 grabbed_tiles[0 if direction == -1 else 1] = triple_color
             else:
                 grabbed_tiles[2 if direction == -1 else 3] = triple_color
 
         return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3], triple_color
+
+
 
 def grab_else(mosaic_pattern: list, grabbed_tiles: list, color_arrays: list):
     back_left = mosaic_pattern[0]
