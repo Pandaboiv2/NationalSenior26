@@ -55,7 +55,7 @@ def grab_tiles(target_matrix: list, target_row: int, direction: int, grabbed_til
     motor_d.run_time(1000, 650)
 
     if (grabbed_tiles[2] != 0 and grabbed_tiles[3] != 0) and (grabbed_tiles[0] != 0 or grabbed_tiles[1] != 0):
-        motor_a.run_time(-250, 200)
+        motor_a.run_time(-500, 300)
     else:
         motor_a.run_time(-750, 400)
 
@@ -544,6 +544,7 @@ def go_to_center(starting_color) -> None:
     elif starting_color == 3:
         distance += -0.08
     elif starting_color == 4:
+        ev3.speaker.beep()
         distance += -0.45
 
     move_motors(-400, 400, rotations=distance)
