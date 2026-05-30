@@ -42,7 +42,7 @@ def blocks_in_roi(blocks):
     ]
 
 def compute_grid_positions():
-    """Grid positions are fixed since origin is hardcoded."""
+    #Grid positions are fixed since origin is hardcoded
     positions = []
     for row in ROW_CONFIGS:
         for col_offset in row["col_x_offsets"]:
@@ -95,13 +95,13 @@ def calibrate():
     blocks = get_blocks()
     candidates = blocks_in_roi(blocks)
     if not candidates:
-        print("No blocks detected in ROI")
+        #print("No blocks detected in ROI")
         return
-    print("--- Raw blocks in ROI ---")
+    #print("--- Raw blocks in ROI ---")
     for b in sorted(candidates, key=lambda b: (b.y_center, b.x_center)):
         print("  sig=" + str(b.sig) + "  x=" + str(b.x_center) + "  y=" + str(b.y_center))
-    print("--- Expected grid positions ---")
+    #print("--- Expected grid positions ---")
     for i, (gx, gy) in enumerate(GRID_POSITIONS):
         row = i // 4
         col = i % 4
-        print("  row=" + str(row) + " col=" + str(col) + "  expected_x=" + str(gx) + "  expected_y=" + str(gy))
+        #print("  row=" + str(row) + " col=" + str(col) + "  expected_x=" + str(gx) + "  expected_y=" + str(gy))

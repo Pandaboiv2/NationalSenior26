@@ -35,7 +35,6 @@ def grab_tiles(target_matrix: list, target_row: int, direction: int, grabbed_til
         move_motors(300 * facing, 300 * facing, rotations=0.75) #problem with the rotation constant
 
     else:
-        ev3.speaker.beep()
         # grabbing both tiles (pair)
         if target_row in (0, 1, 2):
             row = target_row
@@ -57,7 +56,7 @@ def grab_tiles(target_matrix: list, target_row: int, direction: int, grabbed_til
     if (grabbed_tiles[2] != 0 and grabbed_tiles[3] != 0) and (grabbed_tiles[0] != 0 or grabbed_tiles[1] != 0):
         motor_a.run_time(-500, 300)
     else:
-        motor_a.run_time(-750, 400)
+        motor_a.run_time(-750, 630)
 
     move_motors(-300, 300, rotations=0.575 + row * 0.35)
     wait(80)
@@ -81,7 +80,7 @@ def move_to_tiles(color: int):
             follow_sensor_port=Port.S4,
             stop_sensor_port=Port.S1,
             base_speed=300,
-            Kp=3.5, Kd=4, Ki=0,
+            Kp=3.2, Kd=4, Ki=0,
             target=48,
             max_angle=None,
             stop_mode="c",
@@ -102,7 +101,7 @@ def go_to_some_tiles(target_color: int, starting_color: int) -> None:
             follow_sensor_port=Port.S4,
             stop_sensor_port=Port.S1,
             base_speed=300,
-            Kp=3.5, Kd=4, Ki=0,
+            Kp=3.2, Kd=4, Ki=0,
             target=48,
             max_angle=None,
             stop_mode="c",
@@ -120,7 +119,7 @@ def go_to_some_tiles(target_color: int, starting_color: int) -> None:
             follow_sensor_port=Port.S1,
             stop_sensor_port=Port.S4,
             base_speed=300,
-            Kp=3.5, Kd=4, Ki=0,
+            Kp=3.2, Kd=4, Ki=0,
             target=48,
             max_angle=None,
             stop_mode="c",
@@ -544,7 +543,6 @@ def go_to_center(starting_color) -> None:
     elif starting_color == 3:
         distance += -0.08
     elif starting_color == 4:
-        ev3.speaker.beep()
         distance += -0.45
 
     move_motors(-400, 400, rotations=distance)
@@ -572,11 +570,11 @@ def go_to_center(starting_color) -> None:
     right_motor.run_angle(300, 60)
     wait(100)
 
-    motor_a.run_time(500, 200)
+    motor_a.run_time(600, 500)
     wait(100)
 
-    motor_a.run_time(-500, 300)
-    wait(100)
+    motor_a.run_time(-700, 350)
+    wait(800)
 
     move_motors(-300, 300, rotations=0.65)
     wait(250)

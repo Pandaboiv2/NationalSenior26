@@ -31,8 +31,8 @@ def move_motors(left_speed, right_speed, duration_ms=None, rotations=None, degre
         return
 
 def tool():
-    global mosaic_pattern 
-    '''
+    global mosaic_pattern
+    ''' 
     #--------------------------------#
     # will go scan and take the bowl #
     right_motor.run_angle(500, 90)
@@ -76,7 +76,6 @@ def tool():
     move_motors(500, -500, rotations=0.67)
     wait(100)
     '''
-
 
 
 
@@ -313,12 +312,11 @@ def tool():
     motor_a.run_time(1000, 750)
     wait(100)
     '''
-
+    
     #remove this line before running 
-
     mosaic_pattern = [
-        1, 4, 4, 3,
-        1, 3, 3, 3,
+        1, 2, 4, 3,
+        1, 2, 3, 3,
         4, 2, 3, 3
     ]
 
