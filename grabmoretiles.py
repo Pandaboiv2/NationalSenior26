@@ -55,7 +55,7 @@ def grab_second_four_tiles(mosaic_pattern: list, color_arrays: list):
 
     #all same
     if mosaic_pattern[6] == mosaic_pattern[7] and mosaic_pattern[10] == mosaic_pattern[11] and mosaic_pattern[6] == mosaic_pattern[10]:
-        grabbed_tiles, color_arrays = GrabSAME(grabbed_tiles, color_arrays, mosaic_pattern[6] - 1)
+        grabbed_tiles, color_arrays = GrabSAME(grabbed_tiles, color_arrays, mosaic_pattern[6])
     
     elif mosaic_pattern[6] == mosaic_pattern[11] and mosaic_pattern[7] == mosaic_pattern[10]:
         pass
