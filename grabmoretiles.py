@@ -6,8 +6,6 @@ from config import ev3, left_motor, right_motor, motor_a, motor_d, colorsensorLe
 from outil import move_motors
 from finding_mozaic_pieces import grab_tiles
 
-
-#boy im gonna crash out 
 """
 REMINDER:
 CLOCKWISE = --

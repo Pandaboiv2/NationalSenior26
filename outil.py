@@ -315,9 +315,10 @@ def tool():
     '''
 
     #remove this line before running 
+
     mosaic_pattern = [
-        1, 2, 4, 3,
-        2, 2, 3, 3,
+        1, 4, 4, 3,
+        1, 3, 3, 3,
         4, 2, 3, 3
     ]
 
@@ -365,3 +366,58 @@ def tool():
     #--------------------------#
 
     return mosaic_pattern
+
+
+
+
+'''
+    move_motors(-300, 300, rotations=0.5)
+    wait(100)
+
+    left_motor.run_angle(-300, 545)
+    wait(100)
+
+    move_motors(-300, 300, rotations=1)
+    wait(100)
+
+    left_motor.run_angle(-300, 545)
+    wait(100)
+
+    move_motors(-300, 300, rotations=1)
+    wait(100)
+
+    left_motor.run_angle(-300, 545)
+    wait(100)
+
+    move_motors(-300, 300, rotations=1)
+    wait(100)
+
+    left_motor.run_angle(-300, 545)
+    wait(100)
+
+    wait(10000)
+
+    move_motors(-300, 300, rotations=0.5)
+    wait(100)
+
+    right_motor.run_angle(300, 545)
+    wait(100)
+
+    move_motors(-300, 300, rotations=1)
+    wait(100)
+
+    right_motor.run_angle(300, 545)
+    wait(100)
+
+    move_motors(-300, 300, rotations=1)
+    wait(100)
+
+    right_motor.run_angle(300, 545)
+    wait(100)
+
+    move_motors(-300, 300, rotations=1)
+    wait(100)
+
+    right_motor.run_angle(300, 545)
+    wait(100)
+'''

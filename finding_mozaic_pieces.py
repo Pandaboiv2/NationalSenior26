@@ -26,11 +26,16 @@ def grab_tiles(target_matrix: list, target_row: int, direction: int, grabbed_til
         target_matrix[row][side] = False
 
         # perform movement
-        move_motors(300 * direction * facing, -300 * direction * facing,
-                    rotations=0.25 + (0.08 if direction == 1 else 0))
-        move_motors(300 * facing, 300 * facing, rotations=0.74)
+        #move_motors(300 * direction * facing, -300 * direction * facing, rotations=0.36 - (0.06 if direction == -1 else 0))
+        if direction == -1:
+            move_motors(300 * facing, -300 * facing, rotations=0.30)
+
+        elif direction == 1:
+            move_motors(-300 * facing, 300 * facing, rotations=0.36)
+        move_motors(300 * facing, 300 * facing, rotations=0.75) #problem with the rotation constant
 
     else:
+        ev3.speaker.beep()
         # grabbing both tiles (pair)
         if target_row in (0, 1, 2):
             row = target_row
@@ -46,7 +51,6 @@ def grab_tiles(target_matrix: list, target_row: int, direction: int, grabbed_til
 
         move_motors(300, 300, rotations=0.745)
 
-    # --- existing intake logic (unchanged) ---
     motor_a.run_time(500, 300)
     motor_d.run_time(1000, 650)
 
@@ -65,7 +69,7 @@ def grab_tiles(target_matrix: list, target_row: int, direction: int, grabbed_til
     move_motors(-300 * facing, -300 * facing, rotations=0.74)
 
     if abs(direction) > 0:
-        move_motors(-300 * direction, 300 * direction, rotations=0.33)
+        move_motors(300 * direction, -300 * direction, rotations=0.33)
 
     return target_matrix
 
@@ -77,7 +81,7 @@ def move_to_tiles(color: int):
             follow_sensor_port=Port.S4,
             stop_sensor_port=Port.S1,
             base_speed=300,
-            Kp=3, Kd=4, Ki=0,
+            Kp=3.5, Kd=4, Ki=0,
             target=48,
             max_angle=None,
             stop_mode="c",
@@ -85,7 +89,7 @@ def move_to_tiles(color: int):
             side="l",
         )
         black_line_counter += 1
-        move_motors(-300, 300, rotations=0.24)
+        move_motors(-300, 300, rotations=0.22)
 
     left_motor.hold()
     right_motor.hold()
@@ -98,7 +102,7 @@ def go_to_some_tiles(target_color: int, starting_color: int) -> None:
             follow_sensor_port=Port.S4,
             stop_sensor_port=Port.S1,
             base_speed=300,
-            Kp=3, Kd=4, Ki=0,
+            Kp=3.5, Kd=4, Ki=0,
             target=48,
             max_angle=None,
             stop_mode="c",
@@ -116,7 +120,7 @@ def go_to_some_tiles(target_color: int, starting_color: int) -> None:
             follow_sensor_port=Port.S1,
             stop_sensor_port=Port.S4,
             base_speed=300,
-            Kp=3, Kd=4, Ki=0,
+            Kp=3.5, Kd=4, Ki=0,
             target=48,
             max_angle=None,
             stop_mode="c",
@@ -300,53 +304,39 @@ def grab_vertical_single(grabbed_tiles, color_arrays, mosaic_colors):
 def grab_three_same(mosaic_pattern, grabbed_tiles, color_arrays):
     a, b, c, d = mosaic_pattern[0], mosaic_pattern[1], mosaic_pattern[4], mosaic_pattern[5]
 
-    # find the color that appears 3 times
     colors = [a, b, c, d]
     for color in [1, 2, 3, 4]:
         if colors.count(color) == 3:
             triple_color = color
             break
 
-    # find the odd color
     for color in [a, b, c, d]:
         if color != triple_color:
             odd_color = color
             break
 
-    # positions of the triple color
-    positions = []
-    if a == triple_color: positions.append(("back", -1))
-    if b == triple_color: positions.append(("front", -1))
-    if c == triple_color: positions.append(("back", 1))
-    if d == triple_color: positions.append(("front", 1))
-
-    # check if back row is same color
     back_same = (a == triple_color and c == triple_color)
 
     # --- SCENARIO 1: back row same color ---
     if back_same:
-        # take back-left and back-right first
         move_to_tiles(triple_color)
         color_arrays[triple_color - 1] = grab_tiles(color_arrays[triple_color - 1], 0, 0, grabbed_tiles)
         grabbed_tiles[2] = triple_color
         grabbed_tiles[3] = triple_color
 
-        # take the front tile of the same color
         if b == triple_color:
             front_dir = -1
-            front_index = 0
+            front_index = 1
         else:
             front_dir = 1
-            front_index = 1
+            front_index = 0
 
-        # NO MOVEMENT — just rotate and grab row 1
         color_arrays[triple_color - 1] = grab_tiles(color_arrays[triple_color - 1], 1, front_dir, grabbed_tiles)
         grabbed_tiles[front_index] = triple_color
 
-        # finally take the odd color
         go_to_some_tiles(odd_color, triple_color)
         odd_dir = -1 if b == odd_color else 1
-        odd_index = 0 if odd_dir == -1 else 1
+        odd_index = 1 if odd_dir == -1 else 0
         color_arrays[odd_color - 1] = grab_tiles(color_arrays[odd_color - 1], 0, odd_dir, grabbed_tiles)
         grabbed_tiles[odd_index] = odd_color
 
@@ -354,59 +344,52 @@ def grab_three_same(mosaic_pattern, grabbed_tiles, color_arrays):
 
     # --- SCENARIO 2: back row NOT same color ---
     else:
-        # 1) Take the odd color first
+        # figure out which side the odd color is on
+        if a == odd_color:
+            odd_dir = -1
+            odd_back_index = 2
+            triple_back_dir = 1
+            triple_back_index = 3
+        else:  # c == odd_color
+            odd_dir = 1
+            odd_back_index = 3
+            triple_back_dir = -1
+            triple_back_index = 2
+
+        # figure out front slots of triple_color
+        # b = front-left, d = front-right
+        if b == triple_color and d == triple_color:
+            front_same_side = (1 if triple_back_dir == 1 else -1, 0 if triple_back_dir == 1 else 1)
+            front_other_side = (-1 if triple_back_dir == 1 else 1, 1 if triple_back_dir == 1 else 0)
+        elif b == triple_color:
+            front_same_side = (-1, 1)    # front-left
+            front_other_side = None
+        else:
+            front_same_side = (1, 0)     # front-right
+            front_other_side = None
+
+        # Step 1: take odd color back
         move_to_tiles(odd_color)
-        odd_dir = -1 if b == odd_color else 1
-        odd_index = 0 if odd_dir == -1 else 1
+        color_arrays[odd_color - 1] = grab_tiles(color_arrays[odd_color - 1], 0, odd_dir, grabbed_tiles)
+        grabbed_tiles[odd_back_index] = odd_color
 
-        color_arrays[odd_color - 1] = grab_tiles(
-            color_arrays[odd_color - 1],
-            0,              # odd tile is ALWAYS in the back row
-            odd_dir,
-            grabbed_tiles
-        )
-        grabbed_tiles[odd_index] = odd_color
-
-        # 2) Move to the triple_color lane
+        # Step 2: go to triple color, take back slot
         go_to_some_tiles(triple_color, odd_color)
+        color_arrays[triple_color - 1] = grab_tiles(color_arrays[triple_color - 1], 0, triple_back_dir, grabbed_tiles)
+        grabbed_tiles[triple_back_index] = triple_color
 
-        # 3) Build triple order (back first, then front)
-        triple_order = []
+        # Step 3: take front slot same side as back
+        front_dir, front_index = front_same_side
+        color_arrays[triple_color - 1] = grab_tiles(color_arrays[triple_color - 1], 1, front_dir, grabbed_tiles)  # CHANGED: no go_to_some_tiles, already at triple_color
+        grabbed_tiles[front_index] = triple_color
 
-        # BACK FIRST
-        if a == triple_color:
-            triple_order.append(("back", -1))   # back-left
-        if c == triple_color:
-            triple_order.append(("back", 1))    # back-right
-
-        # THEN FRONT
-        if b == triple_color:
-            triple_order.append(("front", -1))  # front-left
-        if d == triple_color:
-            triple_order.append(("front", 1))   # front-right
-
-        # 4) Grab the 3 same-color tiles in correct order
-        for pos, direction in triple_order:
-
-            # correct row
-            row = 0 if pos == "back" else 1
-
-            color_arrays[triple_color - 1] = grab_tiles(
-                color_arrays[triple_color - 1],
-                row,
-                direction,
-                grabbed_tiles
-            )
-
-            # update grabbed_tiles
-            if pos == "front":
-                grabbed_tiles[0 if direction == -1 else 1] = triple_color
-            else:
-                grabbed_tiles[2 if direction == -1 else 3] = triple_color
+        # Step 4: take front slot other side (only if exists)
+        if front_other_side is not None:
+            front_dir, front_index = front_other_side
+            color_arrays[triple_color - 1] = grab_tiles(color_arrays[triple_color - 1], 0, front_dir, grabbed_tiles)  # CHANGED: no go_to_some_tiles
+            grabbed_tiles[front_index] = triple_color
 
         return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3], triple_color
-
-
 
 def grab_else(mosaic_pattern: list, grabbed_tiles: list, color_arrays: list):
     back_left = mosaic_pattern[0]
@@ -526,12 +509,17 @@ def grab_first_four_tiles(mosaic_pattern: list, grabbed_tiles: list, color_array
         go_to_center(last_color)
 
     # horizontal pair both rows
-    elif a == b and c == d:
+    elif a == c and b == d:
         grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3] = grab_horizontal(mosaic_pattern, grabbed_tiles, color_arrays)
         go_to_center(b)
+    
+    # horizontal single
+    elif a == c or b == d:
+        grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3] = grab_horizontal_single(mosaic_pattern, grabbed_tiles, color_arrays)
+        go_to_center(a if a == c else b)
 
     # vertical pair both columns
-    elif a == c and b == d:
+    elif a == b and c == d:
         grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3], last_color = grab_vertical(mosaic_pattern, grabbed_tiles, color_arrays)
         go_to_center(last_color)
 
@@ -539,11 +527,6 @@ def grab_first_four_tiles(mosaic_pattern: list, grabbed_tiles: list, color_array
     elif a == b or c == d:
         grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3], last_color = grab_vertical_single(grabbed_tiles, color_arrays, mosaic_pattern)
         go_to_center(last_color)
-
-    # horizontal single
-    elif a == c or b == d:
-        grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3] = grab_horizontal_single(mosaic_pattern, grabbed_tiles, color_arrays)
-        go_to_center(a if a == c else b)
 
     else:
         grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3], last_color = grab_else(mosaic_pattern, grabbed_tiles, color_arrays)
@@ -583,15 +566,15 @@ def go_to_center(starting_color) -> None:
     )
     wait(100)
 
-    motor_a.run_time(200, 100)
-    wait(100)
-
     left_motor.run_angle(-300, 65)
     wait(100)
     right_motor.run_angle(300, 60)
     wait(100)
 
-    motor_a.run_time(-850, 500)
+    motor_a.run_time(500, 200)
+    wait(100)
+
+    motor_a.run_time(-500, 300)
     wait(100)
 
     move_motors(-300, 300, rotations=0.65)
@@ -605,7 +588,7 @@ def go_to_center(starting_color) -> None:
 
     motor_a.run_time(-1000, 600)
     wait(100)
-    motor_a.run_time(1000, 850)
+    motor_a.run_time(1500, 850)
     wait(100)
     motor_a.run_time(-500, 600)
     wait(100)
