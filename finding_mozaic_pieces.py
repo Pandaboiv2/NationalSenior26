@@ -28,10 +28,10 @@ def grab_tiles(target_matrix: list, target_row: int, direction: int, grabbed_til
         # perform movement
         #move_motors(300 * direction * facing, -300 * direction * facing, rotations=0.36 - (0.06 if direction == -1 else 0))
         if direction == -1:
-            move_motors(300 * facing, -300 * facing, rotations=0.30)
+            move_motors(-300 * facing, 300 * facing, rotations=0.30)
 
         elif direction == 1:
-            move_motors(-300 * facing, 300 * facing, rotations=0.36)
+            move_motors(300 * facing, -300 * facing, rotations=0.36)
         move_motors(300 * facing, 300 * facing, rotations=0.75) #problem with the rotation constant
 
     else:
@@ -60,7 +60,7 @@ def grab_tiles(target_matrix: list, target_row: int, direction: int, grabbed_til
 
     move_motors(-300, 300, rotations=0.575 + row * 0.35)
     wait(80)
-    motor_a.run_time(300, 600)
+    motor_a.run_time(1000, 600)
     motor_d.run(-750)
     wait(600)
     motor_a.run_time(-500, 300)
@@ -570,16 +570,16 @@ def go_to_center(starting_color) -> None:
     right_motor.run_angle(300, 60)
     wait(100)
 
-    motor_a.run_time(600, 500)
-    wait(100)
+    #motor_a.run_time(600, 500)
+    #wait(100)
 
-    motor_a.run_time(-700, 350)
-    wait(800)
+    #motor_a.run_time(-700, 350)
+    #wait(800)
 
-    move_motors(-300, 300, rotations=0.65)
+    move_motors(-300, 300, rotations=0.67)
     wait(250)
 
-    motor_a.run_time(550, 350)
+    motor_a.run_time(1000, 350)
     wait(100)
 
     motor_d.run_time(750, 650)
@@ -600,10 +600,6 @@ def go_to_center(starting_color) -> None:
 
     motor_a.run_time(-1050, 500)
     wait(100)
-
-
-
-
 
 
 

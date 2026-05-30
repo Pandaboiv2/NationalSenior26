@@ -30,7 +30,8 @@ def move_motors(left_speed, right_speed, duration_ms=None, rotations=None, degre
         right_motor.stop(Stop.BRAKE)
         return
 
-def tool():
+#directly goes and sort
+def test1():
     global mosaic_pattern
     ''' 
     #--------------------------------#
@@ -76,11 +77,7 @@ def tool():
     move_motors(500, -500, rotations=0.67)
     wait(100)
     '''
-
-
-
-
-
+    
     '''
     mosaic_pattern = scan_mosaic()
     print(mosaic_pattern)
@@ -89,7 +86,95 @@ def tool():
     #############################
 
 
+    #'''
+    #remove this line before running 
+    mosaic_pattern = [
+        1, 4, 4, 3,
+        2, 3, 3, 3,
+        4, 2, 3, 3
+    ]
+    #'''
+
+    move_motors(-400, 400, rotations=0.55)
+    wait(100)
+
+    move_motors(-400, -400, rotations=0.75)
+    wait(100)
+
+    pid_line_follower(follow_sensor_port=Port.S4,
+                    stop_sensor_port=Port.S1,
+                    base_speed=870,
+                    Kp=4, Kd=4, Ki=0,
+                    target=48,
+                    max_angle=1450,
+                    stop_mode="a",
+                    stop_threshold=22,
+                    side="r",)
+    wait(100)
+
+    move_motors(-300, -300, rotations=0.75)
+    wait(100)
+
+    return mosaic_pattern
+
+    
+
+
+
+    #############################3
+
+#does the tool first
+def test2():
+    global mosaic_pattern
     '''
+    #--------------------------------#
+    # will go scan and take the bowl #
+    right_motor.run_angle(500, 90)
+    wait(100)
+
+    move_motors(-500, 500, rotations=0.75)
+
+    left_motor.run_angle(-500, 90)
+    wait(100)
+
+    pid_line_follower(follow_sensor_port=Port.S1,
+                    stop_sensor_port=Port.S4,
+                    base_speed=870,
+                    Kp=2, Kd=3, Ki=0,
+                    target=48,
+                    max_angle=1350,
+                    stop_mode="a",
+                    stop_threshold=22,
+                    side="r",)
+
+    wait(100)
+
+    pid_line_follower(follow_sensor_port=Port.S1,
+                    stop_sensor_port=Port.S4,
+                    base_speed=300,
+                    Kp=3, Kd=3, Ki=0,
+                    target=48,
+                    max_angle=None,
+                    stop_mode="c",
+                    stop_threshold=22,
+                    side="r",)
+    
+    wait(150)
+
+    move_motors(-500, 500, rotations=0.2)
+    wait(100)
+
+    move_motors(-500, -500, rotations=0.74)
+    wait(100)
+
+    move_motors(500, -500, rotations=0.67)
+    wait(100)
+
+    mosaic_pattern = scan_mosaic()
+    print(mosaic_pattern)
+
+    wait(5000)
+
     move_motors(-750, -750, rotations=1.52)
     wait(100)
 
@@ -244,7 +329,7 @@ def tool():
     move_motors(500, 500, rotations=1.52)
     wait(100)
 
-    move_motors(500, -500, rotations=0.65)
+    move_motors(500, -500, rotations=0.55)
     wait(100)
 
     motor_a.run_time(1000, 750)
@@ -304,7 +389,7 @@ def tool():
     move_motors(450, -450, rotations=0.8)
     wait(100)
 
-    left_moto0r.run_angle(450, 210)
+    left_motor.run_angle(450, 210)
     wait(100)
 
     move_motors(500, -500, rotations=2.3)
@@ -312,15 +397,17 @@ def tool():
     motor_a.run_time(1000, 750)
     wait(100)
     '''
-    
+
+    #'''
     #remove this line before running 
     mosaic_pattern = [
         1, 2, 4, 3,
-        1, 2, 3, 3,
+        3, 4, 3, 3,
         4, 2, 3, 3
     ]
+    #'''
 
-    '''
+    #'''
     pid_line_follower(follow_sensor_port=Port.S4,
                     stop_sensor_port=Port.S1,
                     base_speed=250,
@@ -334,11 +421,13 @@ def tool():
     wait(100)
 
     move_motors(-300, 300, rotations=0.08)
-    '''
 
-    #############################3
+    move_motors(300, 300, rotations=0.75)
+
+    return mosaic_pattern
 
 
+'''
     #move_motors(300, 300, rotations=0.74) 
     move_motors(-500, 500, rotations=0.5)
     wait(100)
@@ -364,58 +453,4 @@ def tool():
     #--------------------------#
 
     return mosaic_pattern
-
-
-
-
-'''
-    move_motors(-300, 300, rotations=0.5)
-    wait(100)
-
-    left_motor.run_angle(-300, 545)
-    wait(100)
-
-    move_motors(-300, 300, rotations=1)
-    wait(100)
-
-    left_motor.run_angle(-300, 545)
-    wait(100)
-
-    move_motors(-300, 300, rotations=1)
-    wait(100)
-
-    left_motor.run_angle(-300, 545)
-    wait(100)
-
-    move_motors(-300, 300, rotations=1)
-    wait(100)
-
-    left_motor.run_angle(-300, 545)
-    wait(100)
-
-    wait(10000)
-
-    move_motors(-300, 300, rotations=0.5)
-    wait(100)
-
-    right_motor.run_angle(300, 545)
-    wait(100)
-
-    move_motors(-300, 300, rotations=1)
-    wait(100)
-
-    right_motor.run_angle(300, 545)
-    wait(100)
-
-    move_motors(-300, 300, rotations=1)
-    wait(100)
-
-    right_motor.run_angle(300, 545)
-    wait(100)
-
-    move_motors(-300, 300, rotations=1)
-    wait(100)
-
-    right_motor.run_angle(300, 545)
-    wait(100)
 '''
