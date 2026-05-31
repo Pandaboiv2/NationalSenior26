@@ -45,6 +45,13 @@ def MoveToColor(target_color: int, starting_color: int) -> None:
         wait(100)
         move_motors(300, 300, rotations=1.54)
 
+def GetClosestAvailableTiles(color_list, dir):
+    index = 0
+    for i in range(3):
+        if color_list[i][max(0, dir)]:
+            index = min(index, i)
+    return index
+
 # relative move between colors (same as first sorting logic)
 def go_to_some_tiles(target_color: int, starting_color: int) -> None:
     distance = 0.5 * (target_color - starting_color)
@@ -90,13 +97,21 @@ def two_same_second(color, grabbed_tiles, color_arrays):
     # go to that color from second-sorting start (2.5)
     MoveToColor(color, 2.5)
 
-    # first grab left side (direction -1), row auto-chosen by grab_tiles
-    color_arrays[color - 1] = grab_tiles(color_arrays[color - 1], -1, -1, grabbed_tiles)
-    grabbed_tiles[2] = color  # back-left
+    left_altitude = GetClosestAvailableTiles(color_arrays[color - 1], -1)
+    right_altitude = GetClosestAvailableTiles(color_arrays[color - 1], 1)
 
+    if left_altitude == right_altitude:
+        color_arrays[color - 1] = grab_tiles(color_arrays[color - 1], left_altitude, 0, grabbed_tiles)
+        grabbed_tiles[2] = color  # back-left
+        grabbed_tiles[3] = color  # back-right
+    else:
+        color_arrays[color - 1] = grab_tiles(color_arrays[color - 1], left_altitude, -1, grabbed_tiles)
+        grabbed_tiles[2] = color  # back-left
+        color_arrays[color - 1] = grab_tiles(color_arrays[color - 1], right_altitude, 1, grabbed_tiles)
+        grabbed_tiles[3] = color  # back-right
+
+    # first grab left side (direction -1), row auto-chosen by grab_tiles
     # then grab right side (direction 1), again row auto-chosen
-    color_arrays[color - 1] = grab_tiles(color_arrays[color - 1], -1, 1, grabbed_tiles)
-    grabbed_tiles[3] = color  # back-right
 
     return grabbed_tiles, color_arrays
 
@@ -112,7 +127,10 @@ def two_not_same_second(left_color, right_color, grabbed_tiles, color_arrays):
 
     # FIRST TILE
     MoveToColor(first_color, 2.5)
-    color_arrays[first_color - 1] = grab_tiles(color_arrays[first_color - 1], -1, first_dir, grabbed_tiles)
+    first_avail_tile = GetClosestAvailableTiles(color_arrays[first_color - 1], first_dir)
+    second_avail_tile = GetClosestAvailableTiles(color_arrays[second_color - 1], second_dir)
+
+    color_arrays[first_color - 1] = grab_tiles(color_arrays[first_color - 1], first_avail_tile, first_dir, grabbed_tiles)
     if first_dir == -1:
         grabbed_tiles[2] = first_color
     else:
@@ -120,7 +138,7 @@ def two_not_same_second(left_color, right_color, grabbed_tiles, color_arrays):
 
     # SECOND TILE (relative move between colors)
     go_to_some_tiles(second_color, first_color)
-    color_arrays[second_color - 1] = grab_tiles(color_arrays[second_color - 1], -1, second_dir, grabbed_tiles)
+    color_arrays[second_color - 1] = grab_tiles(color_arrays[second_color - 1], second_avail_tile, second_dir, grabbed_tiles)
     if second_dir == -1:
         grabbed_tiles[2] = second_color
     else:
@@ -224,9 +242,6 @@ def go_to_bottom(starting_color) -> None:
     wait(100)
     motor_a.run_time(-500, 600)
     wait(100)
-
-
-
 
 
 
