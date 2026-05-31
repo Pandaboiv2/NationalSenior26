@@ -6,6 +6,250 @@ from config import ev3, left_motor, right_motor, motor_a, motor_d, colorsensorLe
 from outil import move_motors
 from finding_mozaic_pieces import grab_tiles
 
+# moves to the correct color (absolute, from reference color)
+def MoveToColor(target_color: int, starting_color: int) -> None:
+    get_distance = 0.5 * (target_color - starting_color)
+    if get_distance > 0:
+        pid_line_follower(
+            follow_sensor_port=Port.S4,
+            stop_sensor_port=Port.S1,
+            base_speed=300,
+            Kp=3, Kd=3, Ki=0,
+            target=48,
+            max_angle=None,
+            stop_mode="c",
+            stop_threshold=22,
+            side="l",
+            stop_count=int(get_distance / 0.5),
+        )
+        wait(250)
+        move_motors(-300, 300, rotations=0.24)
+        left_motor.hold()
+        right_motor.hold()
+    else:
+        move_motors(300, 300, rotations=1.54)
+        pid_line_follower(
+            follow_sensor_port=Port.S1,
+            stop_sensor_port=Port.S4,
+            base_speed=300,
+            Kp=3, Kd=3, Ki=0,
+            target=48,
+            max_angle=None,
+            stop_mode="c",
+            stop_threshold=22,
+            side="r",
+            stop_count=int(abs(get_distance) / 0.5),
+        )
+        wait(100)
+        move_motors(-300, 300, rotations=0.22)
+        wait(100)
+        move_motors(300, 300, rotations=1.54)
+
+# relative move between colors (same as first sorting logic)
+def go_to_some_tiles(target_color: int, starting_color: int) -> None:
+    distance = 0.5 * (target_color - starting_color)
+
+    if distance > 0:
+        pid_line_follower(
+            follow_sensor_port=Port.S4,
+            stop_sensor_port=Port.S1,
+            base_speed=300,
+            Kp=3, Kd=3, Ki=0,
+            target=48,
+            max_angle=None,
+            stop_mode="c",
+            stop_threshold=22,
+            side="l",
+            stop_count=int(distance / 0.5),
+        )
+        wait(250)
+        move_motors(-300, 300, rotations=0.24)
+        left_motor.hold()
+        right_motor.hold()
+    else:
+        move_motors(300, 300, rotations=1.54)
+        pid_line_follower(
+            follow_sensor_port=Port.S1,
+            stop_sensor_port=Port.S4,
+            base_speed=300,
+            Kp=3, Kd=3, Ki=0,
+            target=48,
+            max_angle=None,
+            stop_mode="c",
+            stop_threshold=22,
+            side="r",
+            stop_count=int(abs(distance) / 0.5),
+        )
+        wait(100)
+        move_motors(-300, 300, rotations=0.22)
+        wait(100)
+        move_motors(300, 300, rotations=1.54)
+
+# both back tiles same color (index 0 and 4 same)
+def two_same_second(color, grabbed_tiles, color_arrays):
+    # go to that color from second-sorting start (2.5)
+    MoveToColor(color, 2.5)
+
+    # first grab left side (direction -1), row auto-chosen by grab_tiles
+    color_arrays[color - 1] = grab_tiles(color_arrays[color - 1], -1, -1, grabbed_tiles)
+    grabbed_tiles[2] = color  # back-left
+
+    # then grab right side (direction 1), again row auto-chosen
+    color_arrays[color - 1] = grab_tiles(color_arrays[color - 1], -1, 1, grabbed_tiles)
+    grabbed_tiles[3] = color  # back-right
+
+    return grabbed_tiles, color_arrays
+
+# back-left and back-right different colors
+def two_not_same_second(left_color, right_color, grabbed_tiles, color_arrays):
+    # choose closest color first (same rule as before)
+    if left_color <= right_color:
+        first_color, first_dir = left_color, -1   # left
+        second_color, second_dir = right_color, 1 # right
+    else:
+        first_color, first_dir = right_color, 1
+        second_color, second_dir = left_color, -1
+
+    # FIRST TILE
+    MoveToColor(first_color, 2.5)
+    color_arrays[first_color - 1] = grab_tiles(color_arrays[first_color - 1], -1, first_dir, grabbed_tiles)
+    if first_dir == -1:
+        grabbed_tiles[2] = first_color
+    else:
+        grabbed_tiles[3] = first_color
+
+    # SECOND TILE (relative move between colors)
+    go_to_some_tiles(second_color, first_color)
+    color_arrays[second_color - 1] = grab_tiles(color_arrays[second_color - 1], -1, second_dir, grabbed_tiles)
+    if second_dir == -1:
+        grabbed_tiles[2] = second_color
+    else:
+        grabbed_tiles[3] = second_color
+
+    return grabbed_tiles, color_arrays
+
+# FINAL: grab_second_four_tiles
+def grab_second_four_tiles(mosaic_pattern: list, color_arrays: list):
+    grabbed_tiles = [0, 0, 0, 0]
+
+    # repositioning (Option B)
+    move_motors(500, -500, rotations=1.5)
+    move_motors(500, 500, rotations=1.48)
+    pid_line_follower(
+        follow_sensor_port=Port.S1,
+        stop_sensor_port=Port.S4,
+        base_speed=380,
+        Kp=3, Kd=4, Ki=0,
+        target=48,
+        max_angle=None,
+        stop_mode="c",
+        stop_threshold=22,
+        side="r",
+    )
+    wait(250)
+
+    move_motors(-400, 400, rotations=0.35)
+    move_motors(-400, -400, rotations=0.76)
+
+    # ONLY INDEX 0 AND 4
+    back_left  = mosaic_pattern[0]
+    back_right = mosaic_pattern[4]
+
+    if back_left == back_right:
+        grabbed_tiles, color_arrays = two_same_second(back_left, grabbed_tiles, color_arrays)
+    else:
+        grabbed_tiles, color_arrays = two_not_same_second(back_left, back_right, grabbed_tiles, color_arrays)
+
+    go_to_bottom(back_right if back_left != back_right else back_left)
+
+    return grabbed_tiles, color_arrays[0], color_arrays[1], color_arrays[2], color_arrays[3]
+
+def go_to_bottom(starting_color) -> None:
+    distance = 0.5 * (2.5 - starting_color)
+
+    if starting_color == 1:
+        distance += 0.8
+    elif starting_color == 2:
+        distance += 0.3
+    elif starting_color == 3:
+        distance += -0.08
+    elif starting_color == 4:
+        distance += -0.45
+
+    move_motors(-400, 400, rotations=distance)
+    wait(100)
+    move_motors(-400, -400, rotations=0.76)
+    wait(100)
+    move_motors(-390, 390, rotations=0.25)
+    wait(100)
+
+    pid_line_follower(
+        follow_sensor_port=Port.S4,
+        stop_sensor_port=Port.S1,
+        base_speed=350,
+        Kp=3, Kd=4, Ki=0,
+        target=48,
+        max_angle=None,
+        stop_mode="c",
+        stop_threshold=22,
+        side="l",
+    )
+    wait(100)
+
+    left_motor.run_angle(-300, 65)
+    wait(100)
+    right_motor.run_angle(300, 60)
+    wait(100)
+
+    motor_a.run_time(400, 400)
+    wait(100)
+
+    motor_d.run(-750)
+
+    motor_a.run_time(-500, 300)
+    wait(100)
+
+    move_motors(-300, 300, rotations=0.55)
+    wait(250)
+
+    motor_a.run_time(1000, 350)
+    wait(100)
+
+    motor_d.run_time(750, 650)
+    wait(100)
+
+    motor_a.run_time(-1000, 600)
+    wait(100)
+    motor_a.run_time(1500, 1000)
+    wait(100)
+    motor_a.run_time(-500, 600)
+    wait(100)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''
+#!/usr/bin/env pybricks-micropython
+from pybricks.parameters import Port, Stop, Direction
+from pybricks.tools import wait, StopWatch
+from line_follower import pid_line_follower
+from config import ev3, left_motor, right_motor, motor_a, motor_d, colorsensorLeft, colorsensorRight
+from outil import move_motors
+from finding_mozaic_pieces import grab_tiles
+
 """
 REMINDER:
 CLOCKWISE = --
@@ -289,3 +533,5 @@ def go_to_bottom(starting_color) -> None:
                 stop_threshold=22,
                 side="l",)
     wait(250)
+
+'''

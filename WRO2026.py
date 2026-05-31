@@ -4,7 +4,7 @@ from pybricks.ev3devices import Motor, ColorSensor
 from pybricks.parameters import Port, Stop
 from pybricks.tools import wait, StopWatch
 from line_follower import pid_line_follower
-from outil import test1, test2
+from outil import tool
 from finding_mozaic_pieces import grab_first_four_tiles
 from grabmoretiles import grab_second_four_tiles
 
@@ -43,7 +43,7 @@ ev3.speaker.beep(frequency=200, duration=50)
 while len(ev3.buttons.pressed()) == 0:
     wait(1)
 
-mosaic_pattern = test1()
+mosaic_pattern = tool()
 grabbed_tiles, yellow_tiles, blue_tiles, green_tiles, white_tiles = grab_first_four_tiles(mosaic_pattern, grabbed_tiles, [yellow_tiles, blue_tiles, green_tiles, white_tiles])
 grabbed_tiles, yellow_tiles, blue_tiles, green_tiles, white_tiles = grab_second_four_tiles(mosaic_pattern, [yellow_tiles, blue_tiles, green_tiles, white_tiles])
 
